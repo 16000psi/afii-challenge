@@ -1,14 +1,15 @@
+from django.core.exceptions import ValidationError
 from django.db import models
 
 
-class Trade(models.Model):
+class BaseTrade(models.Model):
     INSTRUMENT_CHOICES = [
         ("bond", "Bond"),
         ("cds", "CDS"),
         ("futures", "Futures"),
         ("fx", "FX"),
     ]
-    timestamp = models.DateTimeField(auto_now_add=True)
+    trade_date = models.DateTimeField()  # needs to be just date
     trade_id = models.AutoField(primary_key=True)
     security_id = models.CharField(max_length=100)
     username = models.CharField(max_length=30)
@@ -19,58 +20,59 @@ class Trade(models.Model):
         max_length=10, choices=INSTRUMENT_CHOICES, editable=False
     )
 
-    def __str__(self):
-        return f"Trade {self.trade_id} - {self.security_id} by {self.username}"
-
-
-class BondTrade(Trade):
-    price = models.FloatField()
-    spread = models.FloatField()
-    notional = models.FloatField()
+    price = models.FloatField(null=True, blank=True)
+    spread = models.FloatField(null=True, blank=True)
+    notional = models.FloatField(null=True, blank=True)
     DIRECTION_CHOICES = [
         ("buy", "Buy"),
         ("sell", "Sell"),
     ]
-    direction = models.CharField(max_length=4, choices=DIRECTION_CHOICES)
+    direction = models.CharField(
+        null=True, blank=True, max_length=4, choices=DIRECTION_CHOICES
+    )
+    no_of_contracts = models.IntegerField(null=True, blank=True)
+
+    class Meta:
+        abstract = True
+
+    def clean(self):
+        super().clean()
+        instrument_type = self.instrument_type
+
+        required_fields = {
+            "bond": ["price", "spread", "notional", "direction"],
+            "cds": ["spread", "notional", "direction"],
+            "futures": ["price", "no_of_contracts", "direction"],
+            "fx": ["price", "notional", "direction"],
+        }
+
+        # Get the required fields for the current instrument type
+        required_fields_for_instrument = required_fields.get(instrument_type, [])
+
+        # Check if all required fields are present
+        errors = {}
+        for field in required_fields_for_instrument:
+            if getattr(self, field) in [None, ""]:
+                errors[field] = _(
+                    f"This field is required for {instrument_type} trades."
+                )
+
+        if errors:
+            raise ValidationError(errors)
+
+
+
+class PotentialTrade(BaseTrade):
+    def __str__(self):
+        return (
+            f"Potential trade {self.trade_id} - {self.security_id} by {self.username}"
+        )
+
+
+class Trade(BaseTrade):
+    timestamp = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"BondTrade {self.trade_id} - {self.security_id}"
-
-
-class CDSTrade(Trade):
-    spread = models.FloatField()
-    notional = models.FloatField()
-    DIRECTION_CHOICES = [
-        ("buy", "Buy"),
-        ("sell", "Sell"),
-    ]
-    direction = models.CharField(max_length=4, choices=DIRECTION_CHOICES)
-
-    def __str__(self):
-        return f"CDSTrade {self.trade_id} - {self.security_id}"
-
-
-class FuturesTrade(Trade):
-    price = models.FloatField()
-    no_of_contracts = models.IntegerField()
-    DIRECTION_CHOICES = [
-        ("buy", "Buy"),
-        ("sell", "Sell"),
-    ]
-    direction = models.CharField(max_length=4, choices=DIRECTION_CHOICES)
-
-    def __str__(self):
-        return f"FuturesTrade {self.trade_id} - {self.security_id}"
-
-
-class FXTrade(Trade):
-    price = models.FloatField()
-    notional = models.FloatField()
-    DIRECTION_CHOICES = [
-        ("buy", "Buy"),
-        ("sell", "Sell"),
-    ]
-    direction = models.CharField(max_length=4, choices=DIRECTION_CHOICES)
-
-    def __str__(self):
-        return f"FXTrade {self.trade_id} - {self.security_id}"
+        return (
+            f"Committed trade {self.trade_id} - {self.security_id} by {self.username}"
+        )

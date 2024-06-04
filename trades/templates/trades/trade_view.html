@@ -33,4 +33,21 @@ onclick="javascript:window.location.href=`{% url 'trade_view' type='fx' %}`; ret
 />
 <label for="fx">Fx</label><br />
 
-{{ form.as_p }} {% endblock content %}
+<form method="post">
+      {% csrf_token %}
+      {% for field in form %}
+          <div>
+              <label for="{{ field.id_for_label }}">{{ field.label }}:</label>
+              {{ field }}
+              {% if field.errors %}
+                  <div class="error">
+                      {% for error in field.errors %}
+                          <p>{{ error }}</p>
+                      {% endfor %}
+                  </div>
+              {% endif %}
+          </div>
+      {% endfor %}
+      <button type="submit">Submit</button>
+  </form>
+{% endblock content %}

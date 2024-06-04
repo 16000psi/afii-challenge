@@ -1,25 +1,59 @@
 from django import forms
+from django.core.exceptions import ValidationError
+from django.forms.widgets import DateInput, NumberInput, Select
 
-from .models import Trade
+from .models import PotentialTrade
 
 
-class TradeForm(forms.ModelForm):
+class PotentialTradeForm(forms.ModelForm):
     class Meta:
-        model = Trade
-        fields = "__all__"
+        fields = "__all__"  # necessary?
+        model = PotentialTrade
+        widgets = {
+            "trade_date": DateInput(attrs={"type": "date"}),
+        }
 
 
-class BondForm(TradeForm):
-    bond_extra = forms.CharField(max_length=10, label="bond")
+class BondForm(PotentialTradeForm):
+    class Meta(PotentialTradeForm.Meta):
+        exclude = ["no_of_contracts"]
+
+    price = forms.FloatField(required=True)
+    spread = forms.FloatField(required=True)
+    notional = forms.FloatField(required=True)
+    direction = forms.ChoiceField(
+        choices=[("buy", "Buy"), ("sell", "Sell")], widget=Select(), required=True
+    )
 
 
-class CDSForm(TradeForm):
-    cds_extra = forms.CharField(max_length=10, label="cds")
+class CDSForm(PotentialTradeForm):
+    class Meta(PotentialTradeForm.Meta):
+        exclude = ["price", "no_of_contracts"]
+
+    spread = forms.FloatField(required=True)
+    notional = forms.FloatField(required=True)
+    direction = forms.ChoiceField(
+        choices=[("buy", "Buy"), ("sell", "Sell")], widget=Select(), required=True
+    )
 
 
-class FXForm(TradeForm):
-    fx_extra = forms.CharField(max_length=10, label="fx")
+class FuturesForm(PotentialTradeForm):
+    class Meta(PotentialTradeForm.Meta):
+        exclude = ["spread", "notional"]
+
+    price = forms.FloatField(required=True)
+    no_of_contracts = forms.IntegerField(required=True)
+    direction = forms.ChoiceField(
+        choices=[("buy", "Buy"), ("sell", "Sell")], widget=Select(), required=True
+    )
 
 
-class FuturesForm(TradeForm):
-    futures_extra = forms.CharField(max_length=10, label="futures")
+class FXForm(PotentialTradeForm):
+    class Meta(PotentialTradeForm.Meta):
+        exclude = ["spread", "no_of_contracts"]
+
+    price = forms.FloatField(required=True)
+    notional = forms.FloatField(required=True)
+    direction = forms.ChoiceField(
+        choices=[("buy", "Buy"), ("sell", "Sell")], widget=Select(), required=True
+    )

@@ -1,28 +1,41 @@
 from django.shortcuts import redirect, render
+from django.urls import reverse
 
+from .constants import (
+    TRADE_TYPE_BOND,
+    TRADE_TYPE_CDS,
+    TRADE_TYPE_FUTURES,
+    TRADE_TYPE_FX,
+)
 from .forms import BondForm, CDSForm, FuturesForm, FXForm
+from .models import PotentialTrade
 
 
 def trade_view(request, type):
+    form = None
     if request.method == "POST":
-        if type == "bond":  # maken into contants.PLEASE
+        if type == TRADE_TYPE_BOND:
             form = BondForm(request.POST)
-        elif type == "cds":  # maken into contants.PLEASE
+        elif type == TRADE_TYPE_CDS:
             form = CDSForm(request.POST)
-        elif type == "fx":  # maken into contants.PLEASE
+        elif type == TRADE_TYPE_FX:
             form = FXForm(request.POST)
-        elif type == "futures":  # maken into contants.PLEASE
+        elif type == TRADE_TYPE_FUTURES:
             form = FuturesForm(request.POST)
 
         if form.is_valid():
-            return redirect("success")
+            potential_trade = form.save(commit=False)
+            potential_trade.instrument_type = type
+            potential_trade.save()
+            return redirect(reverse('trade_view', kwargs={'type': type}))
+
     else:
-        if type == "bond":  # maken into contants.PLEASE
+        if type == TRADE_TYPE_BOND:
             form = BondForm()
-        elif type == "cds":  # maken into contants.PLEASE
+        elif type == TRADE_TYPE_CDS:
             form = CDSForm()
-        elif type == "fx":  # maken into contants.PLEASE
+        elif type == TRADE_TYPE_FX:
             form = FXForm()
-        elif type == "futures":  # maken into contants.PLEASE
+        elif type == TRADE_TYPE_FUTURES:
             form = FuturesForm()
     return render(request, "trades/trade_view.html", {"type": type, "form": form})
