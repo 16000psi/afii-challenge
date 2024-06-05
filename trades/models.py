@@ -61,18 +61,13 @@ class BaseTrade(models.Model):
             raise ValidationError(errors)
 
 
-
 class PotentialTrade(BaseTrade):
     def __str__(self):
-        return (
-            f"Potential trade {self.trade_id} - {self.security_id} by {self.username}"
-        )
+        return f"Potential {self.instrument_type} trade {self.trade_id} - {self.security_id} by {self.username}"
 
 
 class Trade(BaseTrade):
     timestamp = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return (
-            f"Committed trade {self.trade_id} - {self.security_id} by {self.username}"
-        )
+        return f"Committed  {self.instrument_type} trade {self.trade_id} - {self.security_id} by {self.username}"
