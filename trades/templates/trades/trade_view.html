@@ -1,4 +1,4 @@
-{% include 'base.html' %} {% block content %}
+{% extends 'base.html' %} {% block content %}
 <h2>Hello World</h2>
 <input type="radio" id="bond" name="trade_type" value="bond"
 {% if type == "bond" %}
@@ -7,7 +7,7 @@ checked
 onclick="javascript:window.location.href=`{% url 'trade_view' type='bond' days_ago=days_ago %}`; return false;"
 
 />
-<label for="bond">Bond</label><br />
+<label for="bond">Bond</label>
 
 <input type="radio" id="cds" name="trade_type" value="cds" 
 {% if type == "cds" %}
@@ -15,7 +15,7 @@ checked
 {% endif %}
 onclick="javascript:window.location.href=`{% url 'trade_view' type='cds' days_ago=days_ago %}`; return false;"
 />
-<label for="cds">CDS</label><br />
+<label for="cds">CDS</label>
 
 <input type="radio" id="futures" name="trade_type" value="futures" 
 {% if type == "futures" %}
@@ -23,7 +23,7 @@ checked
 {% endif %}
 onclick="javascript:window.location.href=`{% url 'trade_view' type='futures' days_ago=days_ago  %}`; return false;"
 />
-<label for="futures">Futures</label><br />
+<label for="futures">Futures</label>
 
 <input type="radio" id="fx" name="trade_type" value="fx"
 {% if type == "fx" %}
@@ -31,7 +31,7 @@ checked
 {% endif %}
 onclick="javascript:window.location.href=`{% url 'trade_view' type='fx' days_ago=days_ago  %}`; return false;"
 />
-<label for="fx">Fx</label><br />
+<label for="fx">Fx</label>
 
 <form method="post">
     {% csrf_token %}

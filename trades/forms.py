@@ -24,6 +24,17 @@ class BondForm(PotentialTradeForm):
     direction = forms.ChoiceField(
         choices=[("buy", "Buy"), ("sell", "Sell")], widget=Select(), required=True
     )
+    strategy = forms.ChoiceField(
+        choices=[
+            ("active_short", "Active Short"),
+            ("relval", "RelVal"),
+            ("slbs", "SLBs"),
+            ("curves", "Curves"),
+            ("use_of_proceeds", "Use of Proceeds"),
+            ("", "--"),
+        ],
+        widget=Select(),
+    )
 
 
 class CDSForm(PotentialTradeForm):
@@ -34,6 +45,18 @@ class CDSForm(PotentialTradeForm):
     notional = forms.FloatField(required=True)
     direction = forms.ChoiceField(
         choices=[("buy", "Buy"), ("sell", "Sell")], widget=Select(), required=True
+    )
+    strategy = forms.ChoiceField(
+        choices=[
+            ("active_short", "Active Short"),
+            ("relval", "RelVal"),
+            ("slbs", "SLBs"),
+            ("curves", "Curves"),
+            ("use_of_proceeds", "Use of Proceeds"),
+            ("", "--"),
+
+        ],
+        widget=Select(),
     )
 
 
@@ -46,6 +69,13 @@ class FuturesForm(PotentialTradeForm):
     direction = forms.ChoiceField(
         choices=[("buy", "Buy"), ("sell", "Sell")], widget=Select(), required=True
     )
+    strategy = forms.ChoiceField(
+        choices=[
+            ("hedge", "Hedge"),
+            ("", "--"),
+        ],
+        widget=Select(),
+    )
 
 
 class FXForm(PotentialTradeForm):
@@ -56,4 +86,11 @@ class FXForm(PotentialTradeForm):
     notional = forms.FloatField(required=True)
     direction = forms.ChoiceField(
         choices=[("buy", "Buy"), ("sell", "Sell")], widget=Select(), required=True
+    )
+    strategy = forms.ChoiceField(
+        choices=[
+            ("hedge", "Hedge"),
+            ("", "--"),
+        ],
+        widget=Select(),
     )

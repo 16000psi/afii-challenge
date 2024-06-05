@@ -1,10 +1,13 @@
 import json
 from datetime import timedelta
 
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.forms import UserCreationForm
 from django.db.models import Count
 from django.shortcuts import redirect, render
-from django.urls import reverse
+from django.urls import reverse, reverse_lazy
 from django.utils import timezone
+from django.views import generic
 
 from .constants import (
     TRADE_TYPE_BOND,
@@ -16,6 +19,7 @@ from .forms import BondForm, CDSForm, FuturesForm, FXForm
 from .models import PotentialTrade, Trade
 
 
+@login_required
 def trade_view(request, type, days_ago):
     form = None
     potential_trades = PotentialTrade.objects.all()
@@ -25,7 +29,6 @@ def trade_view(request, type, days_ago):
     trade_counts_qs = trades.values("instrument_type").annotate(count=Count("trade_id"))
     trade_counts_list = list(trade_counts_qs)
     trade_counts_json = json.dumps(trade_counts_list)
-    # breakpoint()
 
     if request.method == "POST":
         action = request.POST.get("action")
@@ -42,6 +45,7 @@ def trade_view(request, type, days_ago):
             if form.is_valid():
                 potential_trade = form.save(commit=False)
                 potential_trade.instrument_type = type
+                potential_trade.username = request.user.username
                 potential_trade.save()
 
         elif action == "finalise_trades":
@@ -80,11 +84,8 @@ def trade_view(request, type, days_ago):
             reverse(
                 "trade_view",
                 kwargs={
-                    # "potential_trades": potential_trades,
-                    # "trade_counts_json": trade_counts_json,
                     "type": type,
                     "days_ago": days_ago,
-                    # "form": form,
                 },
             )
         )
@@ -110,3 +111,9 @@ def trade_view(request, type, days_ago):
             "form": form,
         },
     )
+
+
+class SignUpView(generic.CreateView):
+    form_class = UserCreationForm
+    success_url = reverse_lazy("trade_view", kwargs={"type": "bond", "days_ago": 10})
+    template_name = "registration/signup.html"
