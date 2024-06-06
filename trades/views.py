@@ -8,6 +8,7 @@ from django.shortcuts import redirect, render
 from django.urls import reverse, reverse_lazy
 from django.utils import timezone
 from django.views import generic
+from django.views.generic.edit import UpdateView
 
 from .constants import (
     TRADE_TYPE_BOND,
@@ -111,6 +112,24 @@ def trade_view(request, type, days_ago):
             "form": form,
         },
     )
+
+
+class PotentialTradeUpdateView(UpdateView):
+    model = PotentialTrade
+    template_name = "trades/potential_trade_form.html"
+    context_object_name = "trades"
+    success_url = reverse_lazy("trade_view", kwargs={"type": "bond", "days_ago": 10})
+
+    def get_form_class(self):
+        potential_trade = self.get_object()
+        if potential_trade.instrument_type == "bond":
+            return BondForm
+        elif potential_trade.instrument_type == "cds":
+            return CDSForm
+        elif potential_trade.instrument_type == "futures":
+            return FuturesForm
+        elif potential_trade.instrument_type == "fx":
+            return FXForm
 
 
 class SignUpView(generic.CreateView):

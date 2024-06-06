@@ -4,6 +4,7 @@
 <table>
     <thead>
         <tr>
+            <th>Edit</th>
             <th>Trade ID</th>
             <th>Trade Date</th>
             <th>Security ID</th>
@@ -22,6 +23,7 @@
     <tbody>
         {% for trade in potential_trades %}
         <tr>
+          <td><a href="{% url 'edit_potential_trade' pk=trade.trade_id %}">Edit</a></td>
             <td>{{ trade.trade_id }}</td>
             <td>{{ trade.trade_date }}</td>
             <td>{{ trade.security_id }}</td>

@@ -4,6 +4,7 @@ from datetime import timedelta
 from django.contrib.auth.models import User
 from django.core.management.base import BaseCommand
 from django.utils import timezone
+
 from trades.models import Trade  # Adjust the import based on your app name
 
 
@@ -26,6 +27,17 @@ class Command(BaseCommand):
         end_date = timezone.now()
         return start_date + (end_date - start_date) * random.random()
 
+    def create_recent_date(self):
+        start_date = timezone.now() - timedelta(days=10)
+        end_date = timezone.now()
+        return start_date + (end_date - start_date) * random.random()
+
+    def generate_date(self, i):
+        if i < 10:
+            return self.create_recent_date()
+        else:
+            return self.create_random_date()
+
     def create_trades(self):
         STRATEGY_CHOICES_BONDS_CDS = [
             "active_short",
@@ -36,9 +48,10 @@ class Command(BaseCommand):
         ]
 
         # Generate bonds
-        for _ in range(50):
+        for i in range(random.randint(75, 125)):
+            date = self.generate_date(i)
             trade = Trade(
-                trade_date=self.create_random_date(),
+                trade_date=date,
                 security_id=f"security_{random.randint(1000, 9999)}",
                 username=random.choice(self.users).username,
                 instrument_type="bond",
@@ -53,9 +66,10 @@ class Command(BaseCommand):
             trade.save()
 
         # Generate CDS
-        for _ in range(50):
+        for i in range(random.randint(75, 125)):
+            date = self.generate_date(i)
             trade = Trade(
-                trade_date=self.create_random_date(),
+                trade_date=date,
                 security_id=f"security_{random.randint(1000, 9999)}",
                 username=random.choice(self.users).username,
                 instrument_type="cds",
@@ -69,9 +83,10 @@ class Command(BaseCommand):
             trade.save()
 
         # Generate Futures
-        for _ in range(50):
+        for i in range(random.randint(75, 125)):
+            date = self.generate_date(i)
             trade = Trade(
-                trade_date=self.create_random_date(),
+                trade_date=date,
                 security_id=f"security_{random.randint(1000, 9999)}",
                 username=random.choice(self.users).username,
                 instrument_type="futures",
@@ -85,9 +100,10 @@ class Command(BaseCommand):
             trade.save()
 
         # Generate FX
-        for _ in range(50):
+        for i in range(random.randint(75, 125)):
+            date = self.generate_date(i)
             trade = Trade(
-                trade_date=self.create_random_date(),
+                trade_date=date,
                 security_id=f"security_{random.randint(1000, 9999)}",
                 username=random.choice(self.users).username,
                 instrument_type="fx",

@@ -1,5 +1,4 @@
-from django.contrib.auth import views as auth_views
-from django.contrib.auth.views import LogoutView
+from django.contrib.auth.views import LoginView, LogoutView
 from django.shortcuts import redirect
 from django.urls import path
 
@@ -11,9 +10,13 @@ urlpatterns = [
     path("trade/<str:type>/<int:days_ago>", views.trade_view, name="trade_view"),
     path(
         "login/",
-        auth_views.LoginView.as_view(template_name="registration/login.html"),
+        LoginView.as_view(template_name="registration/login.html"),
         name="login",
     ),
-    path('logout/', LogoutView.as_view(), name='logout'),
-
+    path("logout/", LogoutView.as_view(), name="logout"),
+    path(
+        "potential_trade/<int:pk>/",
+        views.PotentialTradeUpdateView.as_view(),
+        name="edit_potential_trade",
+    ),
 ]
