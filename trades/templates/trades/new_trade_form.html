@@ -1,52 +1,201 @@
 <div class="card">
-<input type="radio" id="bond" name="trade_type" value="bond"
-{% if type == "bond" %}
-checked
-{% endif %}
-onclick="javascript:window.location.href=`{% url 'trade_view' type='bond' days_ago=days_ago %}`; return false;"
+  <input type="radio" id="bond" name="trade_type" value="bond" checked />
+  <label for="bond">Bond</label>
 
-/>
-<label for="bond">Bond</label>
+  <input type="radio" id="cds" name="trade_type" value="cds" />
+  <label for="cds">CDS</label>
 
-<input type="radio" id="cds" name="trade_type" value="cds" 
-{% if type == "cds" %}
-checked
-{% endif %}
-onclick="javascript:window.location.href=`{% url 'trade_view' type='cds' days_ago=days_ago %}`; return false;"
-/>
-<label for="cds">CDS</label>
+  <input type="radio" id="futures" name="trade_type" value="futures" />
+  <label for="futures">Futures</label>
 
-<input type="radio" id="futures" name="trade_type" value="futures" 
-{% if type == "futures" %}
-checked
-{% endif %}
-onclick="javascript:window.location.href=`{% url 'trade_view' type='futures' days_ago=days_ago  %}`; return false;"
-/>
-<label for="futures">Futures</label>
+  <input type="radio" id="fx" name="trade_type" value="fx" />
+  <label for="fx">Fx</label>
 
-<input type="radio" id="fx" name="trade_type" value="fx"
-{% if type == "fx" %}
-checked
-{% endif %}
-onclick="javascript:window.location.href=`{% url 'trade_view' type='fx' days_ago=days_ago  %}`; return false;"
-/>
-<label for="fx">Fx</label>
-
-<form method="post">
+  <form method="post">
     {% csrf_token %}
+    <input type="hidden" id="trade_type" name="trade_type" value="bond">
     {% for field in form %}
-        <div class="form-group">
-            <label for="{{ field.id_for_label }}">{{ field.label }}:</label>
-            {{ field }}
-            {% if field.errors %}
-                <div class="error">
-                    {% for error in field.errors %}
-                        <p>{{ error }}</p>
-                    {% endfor %}
-                </div>
-            {% endif %}
-        </div>
+    <div class="form-group" data-field="{{ field.name }}">
+      <label for="{{ field.id_for_label }}">{{ field.label }}:</label>
+      {{ field }} {% if field.errors %}
+      <div class="error">
+        {% for error in field.errors %}
+        <p>{{ error }}</p>
+        {% endfor %}
+      </div>
+      {% endif %}
+    </div>
     {% endfor %}
     <button type="submit" name="action" value="add_trade">Submit</button>
-</form>
+  </form>
 </div>
+<script type="text/javascript">
+  document.addEventListener("DOMContentLoaded", function () {
+    const radioButtons = document.querySelectorAll('input[name="trade_type"]');
+    const formGroups = {
+      price: document.querySelectorAll('[data-field="price"]'),
+      spread: document.querySelectorAll('[data-field="spread"]'),
+      notional: document.querySelectorAll('[data-field="notional"]'),
+      direction: document.querySelectorAll('[data-field="direction"]'),
+      no_of_contracts: document.querySelectorAll(
+        '[data-field="no_of_contracts"]',
+      ),
+    };
+
+    const strategyGroup = document.querySelector('[data-field="strategy"]');
+    const strategySelect = strategyGroup.querySelector("select");
+
+    const tradeTypeInput = document.getElementById('trade_type');
+
+    const strategyOptions = {
+      bond: [
+        { value: "active_short", text: "Active Short" },
+        { value: "relval", text: "Relval" },
+        { value: "slbs", text: "SLBS" },
+        { value: "curves", text: "Curves" },
+        { value: "use_of_proceeds", text: "Use of Proceeds" },
+        { value: "", text: "--" },
+      ],
+      cds: [
+        { value: "active_short", text: "Active Short" },
+        { value: "relval", text: "Relval" },
+        { value: "slbs", text: "SLBS" },
+        { value: "curves", text: "Curves" },
+        { value: "use_of_proceeds", text: "Use of Proceeds" },
+        { value: "", text: "--" },
+      ],
+      futures: [
+        { value: "hedge", text: "Hedge" },
+        { value: "", text: "--" },
+      ],
+      fx: [
+        { value: "hedge", text: "Hedge" },
+        { value: "", text: "--" },
+      ],
+    };
+
+    const hideAllFields = () => {
+      for (let key in formGroups) {
+        formGroups[key].forEach((field) => {
+          field.style.display = "none";
+          field
+            .querySelector("input, select, textarea")
+            .removeAttribute("required");
+        });
+      }
+    };
+
+    const showFieldsForTradeType = (tradeType) => {
+      hideAllFields();
+      tradeTypeInput.value = tradeType;
+      switch (tradeType) {
+        case "bond":
+          formGroups.price.forEach((field) => {
+            field.style.display = "block";
+            field
+              .querySelector("input, select, textarea")
+              .setAttribute("required", "required");
+          });
+          formGroups.spread.forEach((field) => {
+            field.style.display = "block";
+            field
+              .querySelector("input, select, textarea")
+              .setAttribute("required", "required");
+          });
+          formGroups.notional.forEach((field) => {
+            field.style.display = "block";
+            field
+              .querySelector("input, select, textarea")
+              .setAttribute("required", "required");
+          });
+          formGroups.direction.forEach((field) => {
+            field.style.display = "block";
+            field
+              .querySelector("input, select, textarea")
+              .setAttribute("required", "required");
+          });
+          break;
+        case "cds":
+          formGroups.spread.forEach((field) => {
+            field.style.display = "block";
+            field
+              .querySelector("input, select, textarea")
+              .setAttribute("required", "required");
+          });
+          formGroups.notional.forEach((field) => {
+            field.style.display = "block";
+            field
+              .querySelector("input, select, textarea")
+              .setAttribute("required", "required");
+          });
+          formGroups.direction.forEach((field) => {
+            field.style.display = "block";
+            field
+              .querySelector("input, select, textarea")
+              .setAttribute("required", "required");
+          });
+          break;
+        case "futures":
+          formGroups.price.forEach((field) => {
+            field.style.display = "block";
+            field
+              .querySelector("input, select, textarea")
+              .setAttribute("required", "required");
+          });
+          formGroups.direction.forEach((field) => {
+            field.style.display = "block";
+            field
+              .querySelector("input, select, textarea")
+              .setAttribute("required", "required");
+          });
+          formGroups.no_of_contracts.forEach((field) => {
+            field.style.display = "block";
+            field
+              .querySelector("input, select, textarea")
+              .setAttribute("required", "required");
+          });
+          break;
+        case "fx":
+          formGroups.price.forEach((field) => {
+            field.style.display = "block";
+            field
+              .querySelector("input, select, textarea")
+              .setAttribute("required", "required");
+          });
+          formGroups.notional.forEach((field) => {
+            field.style.display = "block";
+            field
+              .querySelector("input, select, textarea")
+              .setAttribute("required", "required");
+          });
+          formGroups.direction.forEach((field) => {
+            field.style.display = "block";
+            field
+              .querySelector("input, select, textarea")
+              .setAttribute("required", "required");
+          });
+          break;
+      }
+      updateStrategyOptions(tradeType);
+    };
+
+    radioButtons.forEach((radio) => {
+      radio.addEventListener("change", function () {
+        showFieldsForTradeType(this.value);
+      });
+    });
+
+    const updateStrategyOptions = (tradeType) => {
+      strategySelect.innerHTML = "";
+      strategyOptions[tradeType].forEach((option) => {
+        const opt = document.createElement("option");
+        opt.value = option.value;
+        opt.textContent = option.text;
+        strategySelect.appendChild(opt);
+      });
+    };
+
+    hideAllFields();
+    showFieldsForTradeType("bond");
+  });
+</script>

@@ -7,7 +7,7 @@ from .models import PotentialTrade
 
 class PotentialTradeForm(forms.ModelForm):
     class Meta:
-        fields = "__all__"  # necessary?
+        fields = "__all__"
         model = PotentialTrade
         widgets = {
             "trade_date": DateInput(attrs={"type": "date"}),

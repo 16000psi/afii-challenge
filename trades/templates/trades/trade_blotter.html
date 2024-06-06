@@ -25,22 +25,22 @@
         <tr>
           <td><a href="{% url 'edit_potential_trade' pk=trade.trade_id %}">Edit</a></td>
             <td>{{ trade.trade_id }}</td>
-            <td>{{ trade.trade_date }}</td>
+            <td>{{ trade.trade_date|date:"Y/m/d" }}</td>
             <td>{{ trade.security_id }}</td>
             <td>{{ trade.username }}</td>
             <td>{{ trade.comment }}</td>
             <td>{{ trade.strategy }}</td>
             <td>{{ trade.strategy_id }}</td>
             <td>{{ trade.instrument_type }}</td>
-            <td>{{ trade.price }}</td>
-            <td>{{ trade.spread }}</td>
-            <td>{{ trade.notional }}</td>
-            <td>{{ trade.direction }}</td>
-            <td>{{ trade.no_of_contracts }}</td>
+            <td>{{ trade.price|default_if_none:"" }}</td>
+            <td>{{ trade.spread|default_if_none:"" }}</td>
+            <td>{{ trade.notional|default_if_none:"" }}</td>
+            <td>{{ trade.direction|default_if_none:"" }}</td>
+            <td>{{ trade.no_of_contracts|default_if_none:"" }}</td>
         </tr>
         {% empty %}
         <tr>
-            <td colspan="13">No potential trades available.</td>
+            <td colspan="14">Trades you initiate will appear here.</td>
         </tr>
         {% endfor %}
     </tbody>

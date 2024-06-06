@@ -16,6 +16,6 @@
       {% endfor %}
 
       <button class="button" type="submit">Sign Up</button>
-      <a href="{% url 'trade_view' type="bond" days_ago=10 %}" class="button button--cancel">Cancel</a>
+      <a href="{% url 'trade_view' days_ago=10 %}" class="button button--cancel">Cancel</a>
     </form>
 {% endblock %}

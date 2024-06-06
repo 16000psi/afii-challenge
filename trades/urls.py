@@ -6,8 +6,8 @@ from . import views
 
 urlpatterns = [
     path("signup/", views.SignUpView.as_view(), name="signup"),
-    path("trade/", lambda request: redirect("trade_view", type="bonds", days_ago=10)),
-    path("trade/<str:type>/<int:days_ago>", views.trade_view, name="trade_view"),
+    path("trade/", lambda request: redirect("trade_view", days_ago=10)),
+    path("trade/<int:days_ago>", views.trade_view, name="trade_view"),
     path(
         "login/",
         LoginView.as_view(template_name="registration/login.html"),

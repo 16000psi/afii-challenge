@@ -16,12 +16,12 @@ from .constants import (
     TRADE_TYPE_FUTURES,
     TRADE_TYPE_FX,
 )
-from .forms import BondForm, CDSForm, FuturesForm, FXForm
+from .forms import BondForm, CDSForm, FuturesForm, FXForm, PotentialTradeForm
 from .models import PotentialTrade, Trade
 
 
 @login_required
-def trade_view(request, type, days_ago):
+def trade_view(request, days_ago):
     form = None
     potential_trades = PotentialTrade.objects.all()
     today = timezone.now()
@@ -32,20 +32,21 @@ def trade_view(request, type, days_ago):
     trade_counts_json = json.dumps(trade_counts_list)
 
     if request.method == "POST":
+        instrument_type = request.POST.get("trade_type")
         action = request.POST.get("action")
         if action == "add_trade":
-            if type == TRADE_TYPE_BOND:
+            if instrument_type == TRADE_TYPE_BOND:
                 form = BondForm(request.POST)
-            elif type == TRADE_TYPE_CDS:
+            elif instrument_type == TRADE_TYPE_CDS:
                 form = CDSForm(request.POST)
-            elif type == TRADE_TYPE_FX:
+            elif instrument_type == TRADE_TYPE_FX:
                 form = FXForm(request.POST)
-            elif type == TRADE_TYPE_FUTURES:
+            elif instrument_type == TRADE_TYPE_FUTURES:
                 form = FuturesForm(request.POST)
 
             if form.is_valid():
                 potential_trade = form.save(commit=False)
-                potential_trade.instrument_type = type
+                potential_trade.instrument_type = instrument_type
                 potential_trade.username = request.user.username
                 potential_trade.save()
 
@@ -79,27 +80,11 @@ def trade_view(request, type, days_ago):
                     direction=direction,
                     no_of_contracts=no_of_contracts,
                 )
-
                 trade.delete()
-        return redirect(
-            reverse(
-                "trade_view",
-                kwargs={
-                    "type": type,
-                    "days_ago": days_ago,
-                },
-            )
-        )
+        return redirect('trade_view', days_ago=days_ago)
 
     else:
-        if type == TRADE_TYPE_BOND:
-            form = BondForm()
-        elif type == TRADE_TYPE_CDS:
-            form = CDSForm()
-        elif type == TRADE_TYPE_FX:
-            form = FXForm()
-        elif type == TRADE_TYPE_FUTURES:
-            form = FuturesForm()
+        form = PotentialTradeForm()
 
     return render(
         request,
@@ -107,7 +92,6 @@ def trade_view(request, type, days_ago):
         {
             "potential_trades": potential_trades,
             "trade_counts_json": trade_counts_json,
-            "type": type,
             "days_ago": days_ago,
             "form": form,
         },
@@ -118,7 +102,7 @@ class PotentialTradeUpdateView(UpdateView):
     model = PotentialTrade
     template_name = "trades/potential_trade_form.html"
     context_object_name = "trades"
-    success_url = reverse_lazy("trade_view", kwargs={"type": "bond", "days_ago": 10})
+    success_url = reverse_lazy("trade_view", kwargs={"days_ago": 10})
 
     def get_form_class(self):
         potential_trade = self.get_object()
@@ -134,5 +118,5 @@ class PotentialTradeUpdateView(UpdateView):
 
 class SignUpView(generic.CreateView):
     form_class = UserCreationForm
-    success_url = reverse_lazy("trade_view", kwargs={"type": "bond", "days_ago": 10})
+    success_url = reverse_lazy("trade_view", kwargs={"days_ago": 10})
     template_name = "registration/signup.html"

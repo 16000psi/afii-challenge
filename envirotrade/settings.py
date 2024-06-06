@@ -128,7 +128,7 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 LOGIN_URL = "/login/"
 
-LOGIN_REDIRECT_URL = reverse_lazy("trade_view", kwargs={"type": "bond", "days_ago": 10})
+LOGIN_REDIRECT_URL = reverse_lazy("trade_view", kwargs={"days_ago": 10})
 LOGOUT_REDIRECT_URL = reverse_lazy("login")
 
 STATICFILES_DIRS = [BASE_DIR / "envirotrade" / "staticfiles"]
