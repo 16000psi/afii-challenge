@@ -18,7 +18,8 @@
       {% endfor %}
       <div class="delete-button-container">
         <button type="submit" class="button button--secondary">Save</button>
-        <a href="{% url 'trade_view' days_ago=10 %}" class="button button--cancel">Cancel</a>
+        <a href="{% url 'trade_view' %}" class="button button--cancel">Cancel</a>
+        <a href="{% url 'potential_trade_delete' pk=trade.trade_id %}" class="button">Delete</a>
       </div>
     </form>
   </div>

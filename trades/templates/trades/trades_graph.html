@@ -1,45 +1,68 @@
 <div id="graph" class="card">
   <label for="days_ago">How long ago to view?</label>
-  <select name="days_ago" id="days_ago_selector" onchange="redirectToPage()">
-    <option value="{% url 'trade_view' days_ago=1 %}" {% if days_ago == 1 %} selected {% endif %}>1 Day</option>
-    <option value="{% url 'trade_view' days_ago=7 %}" {% if days_ago == 7 %} selected {% endif %}>7 Days</option>
-    <option value="{% url 'trade_view' days_ago=10 %}" {% if days_ago == 10 %} selected {% endif %}>10 Days</option>
-    <option value="{% url 'trade_view' days_ago=28 %}" {% if days_ago == 28 %} selected {% endif %}>28 Days</option>
-    <option value="{% url 'trade_view' days_ago=100 %}" {% if days_ago == 100 %} selected {% endif %}>100 Days</option>
-    <option value="{% url 'trade_view' days_ago=365 %}" {% if days_ago == 365 %} selected {% endif %}>1 Year</option>
-    <option value="{% url 'trade_view' days_ago=730 %}" {% if days_ago == 730 %} selected {% endif %}>2 Years</option>
-    <option value="{% url 'trade_view' days_ago=1826 %}" {% if days_ago == 1826 %} selected {% endif %}>5 Years</option>
+  <select name="days_ago" id="days_ago_selector" onchange="fetchTradeData()">
+    <option value="1">1 Day</option>
+    <option value="7">7 Days</option>
+    <option value="10" selected>10 Days</option>
+    <option value="28">28 Days</option>
+    <option value="100">100 Days</option>
+    <option value="365">1 Year</option>
+    <option value="730">2 Years</option>
+    <option value="1826">5 Years</option>
   </select>
-    <canvas id="graph-container" class="graph"></canvas>
-  </div>
+  <canvas id="graph-container" class="graph"></canvas>
 </div>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script type="text/javascript">
-    function redirectToPage() {
-        var selectedValue = document.getElementById("days_ago_selector").value;
-        window.location.href = selectedValue + ("#graph")
-    }
-    const tradeData = JSON.parse('{{ trade_counts_json|safe }}');
-    const labels = tradeData.map(trade => trade.instrument_type);
-    const data = tradeData.map(trade => trade.count);
 
-    const ctx = document.getElementById('graph-container').getContext('2d');
-    new Chart(ctx, {
-        type: 'bar',
-        data: {
-            labels: labels,
-            datasets: [{
-                label: 'Number of Trades',
-                data: data,
-                borderWidth: 1
-            }]
-        },
-        options: {
-            scales: {
-                y: {
-                    beginAtZero: true
-                }
-            }
-        }
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script type="text/javascript">
+    document.addEventListener('DOMContentLoaded', function () {
+        fetchTradeData();
     });
+
+    function fetchTradeData() {
+        var daysAgo = document.getElementById("days_ago_selector").value;
+        $.ajax({
+            url: '/trade_counts/' + daysAgo + '/',
+            method: 'GET',
+            dataType: 'json',
+            success: function (tradeData) {
+                updateChart(tradeData);
+            },
+            error: function (error) {
+                console.error('Error fetching trade data:', error);
+            }
+        });
+    }
+
+    function updateChart(tradeData) {
+        const labels = tradeData.map(trade => trade.instrument_type);
+        const data = tradeData.map(trade => trade.count);
+
+        const ctx = document.getElementById('graph-container').getContext('2d');
+        if (window.tradeChart) {
+            window.tradeChart.data.labels = labels;
+            window.tradeChart.data.datasets[0].data = data;
+            window.tradeChart.update();
+        } else {
+            window.tradeChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Number of Trades',
+                        data: data,
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        }
+    }
 </script>

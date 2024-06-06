@@ -1,11 +1,12 @@
-import json
 from datetime import timedelta
 
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import UserCreationForm
+from django.core.paginator import Paginator
 from django.db.models import Count
-from django.shortcuts import redirect, render
-from django.urls import reverse, reverse_lazy
+from django.http import HttpResponseForbidden, JsonResponse
+from django.shortcuts import get_object_or_404, redirect, render
+from django.urls import reverse_lazy
 from django.utils import timezone
 from django.views import generic
 from django.views.generic.edit import UpdateView
@@ -21,15 +22,13 @@ from .models import PotentialTrade, Trade
 
 
 @login_required
-def trade_view(request, days_ago):
+def trade_view(request):
     form = None
-    potential_trades = PotentialTrade.objects.all()
-    today = timezone.now()
-    start_date = today - timedelta(days=days_ago)
-    trades = Trade.objects.filter(trade_date__range=[start_date, today])
-    trade_counts_qs = trades.values("instrument_type").annotate(count=Count("trade_id"))
-    trade_counts_list = list(trade_counts_qs)
-    trade_counts_json = json.dumps(trade_counts_list)
+    potential_trades = PotentialTrade.objects.filter(username=request.user.username)
+
+    paginator = Paginator(potential_trades, 10)
+    page_number = request.GET.get("page")
+    page_obj = paginator.get_page(page_number)
 
     if request.method == "POST":
         instrument_type = request.POST.get("trade_type")
@@ -51,37 +50,25 @@ def trade_view(request, days_ago):
                 potential_trade.save()
 
         elif action == "finalise_trades":
-            potential_trades = PotentialTrade.objects.all()
             for trade in potential_trades:
-                trade_date = trade.trade_date
-                security_id = trade.security_id
-                username = trade.username
-                comment = trade.comment
-                strategy = trade.strategy
-                strategy_id = trade.strategy_id
-                instrument_type = trade.instrument_type
-                price = trade.price
-                spread = trade.spread
-                notional = trade.notional
-                direction = trade.direction
-                no_of_contracts = trade.no_of_contracts
+                trade_data = {
+                    "trade_date": trade.trade_date,
+                    "security_id": trade.security_id,
+                    "username": trade.username,
+                    "comment": trade.comment,
+                    "strategy": trade.strategy,
+                    "strategy_id": trade.strategy_id,
+                    "instrument_type": trade.instrument_type,
+                    "price": trade.price,
+                    "spread": trade.spread,
+                    "notional": trade.notional,
+                    "direction": trade.direction,
+                    "no_of_contracts": trade.no_of_contracts,
+                }
 
-                Trade.objects.create(
-                    trade_date=trade_date,
-                    security_id=security_id,
-                    username=username,
-                    comment=comment,
-                    strategy=strategy,
-                    strategy_id=strategy_id,
-                    instrument_type=instrument_type,
-                    price=price,
-                    spread=spread,
-                    notional=notional,
-                    direction=direction,
-                    no_of_contracts=no_of_contracts,
-                )
+                Trade.objects.create(**trade_data)
                 trade.delete()
-        return redirect('trade_view', days_ago=days_ago)
+        return redirect("trade_view")
 
     else:
         form = PotentialTradeForm()
@@ -90,9 +77,7 @@ def trade_view(request, days_ago):
         request,
         "trades/trade_view.html",
         {
-            "potential_trades": potential_trades,
-            "trade_counts_json": trade_counts_json,
-            "days_ago": days_ago,
+            "potential_trades": page_obj,
             "form": form,
         },
     )
@@ -101,8 +86,8 @@ def trade_view(request, days_ago):
 class PotentialTradeUpdateView(UpdateView):
     model = PotentialTrade
     template_name = "trades/potential_trade_form.html"
-    context_object_name = "trades"
-    success_url = reverse_lazy("trade_view", kwargs={"days_ago": 10})
+    context_object_name = "trade"
+    success_url = reverse_lazy("trade_view")
 
     def get_form_class(self):
         potential_trade = self.get_object()
@@ -115,8 +100,36 @@ class PotentialTradeUpdateView(UpdateView):
         elif potential_trade.instrument_type == "fx":
             return FXForm
 
+    def dispatch(self, request, *args, **kwargs):
+        potential_trade = self.get_object()
+        if request.user.username != potential_trade.username:
+            return HttpResponseForbidden("You are not allowed to edit this trade.")
+        return super().dispatch(request, *args, **kwargs)
+
+
+@login_required
+def delete_potential_trade(request, pk):
+    potential_trade = get_object_or_404(PotentialTrade, pk=pk)
+    if request.user.username == potential_trade.username:
+        potential_trade.delete()
+        return redirect(reverse_lazy("trade_view"))
+    else:
+        return HttpResponseForbidden("You are not allowed to delete this trade.")
+
 
 class SignUpView(generic.CreateView):
     form_class = UserCreationForm
-    success_url = reverse_lazy("trade_view", kwargs={"days_ago": 10})
+    success_url = reverse_lazy("trade_view")
     template_name = "registration/signup.html"
+
+
+def get_trade_counts(request, days_ago):
+    if request.method == "GET":
+        today = timezone.now()
+        start_date = today - timedelta(days=days_ago)
+        trades = Trade.objects.filter(trade_date__range=[start_date, today])
+        trade_counts_qs = trades.values("instrument_type").annotate(
+            count=Count("trade_id")
+        )
+        trade_data = list(trade_counts_qs)
+        return JsonResponse(trade_data, safe=False)

@@ -1,5 +1,6 @@
 from django import forms
 from django.forms.widgets import DateInput, Select
+
 from django.utils import timezone
 
 from .models import PotentialTrade
@@ -15,7 +16,7 @@ class PotentialTradeForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super(PotentialTradeForm, self).__init__(*args, **kwargs)
-        self.fields["trade_date"].initial = timezone.now()
+        self.fields['trade_date'].initial = timezone.now()
 
 
 class BondForm(PotentialTradeForm):

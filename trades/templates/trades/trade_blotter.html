@@ -1,10 +1,30 @@
 <div class="card">
-<h2>Trade Blotter</h2>
+<h2 id="trade-blotter">Trade Blotter</h2>
+      {% if potential_trades.paginator.num_pages > 1 %}
+    <div class="pagination">
+    <span class="step-links">
+        {% if potential_trades.has_previous %}
+            <a href="?page=1#trade-blotter">&laquo; first</a>
+            <a href="?page={{ potential_trades.previous_page_number }}#trade-blotter">previous</a>
+        {% endif %}
+
+        <span class="current">
+            Page {{ potential_trades.number }} of {{ potential_trades.paginator.num_pages }}.
+        </span>
+
+        {% if potential_trades.has_next %}
+            <a href="?page={{ potential_trades.next_page_number }}#trade-blotter">next</a>
+            <a href="?page={{ potential_trades.paginator.num_pages }}#trade-blotter">last &raquo;</a>
+        {% endif %}
+    </span>
+</div>
+  {% endif %}
+
 <div class="table-container">
 <table>
     <thead>
         <tr>
-            <th>Edit</th>
+            <th>Action</th>
             <th>Trade ID</th>
             <th>Trade Date</th>
             <th>Security ID</th>
@@ -23,7 +43,9 @@
     <tbody>
         {% for trade in potential_trades %}
         <tr>
-          <td><a href="{% url 'edit_potential_trade' pk=trade.trade_id %}">Edit</a></td>
+          <td><a href="{% url 'potential_trade_edit' pk=trade.trade_id %}">✏️</a>
+<a href="{% url 'potential_trade_delete' pk=trade.trade_id %}">❌</a>
+          </td>
             <td>{{ trade.trade_id }}</td>
             <td>{{ trade.trade_date|date:"Y/m/d" }}</td>
             <td>{{ trade.security_id }}</td>
@@ -48,7 +70,7 @@
     </div>
 <form method="POST">
     {% csrf_token %}
-    <button type="submit" name="action" value="finalise_trades">Finalise Trades</button>
+    <button type="submit" name="action" value="finalise_trades">Upload Trades</button>
 </form>
 
 </div>
