@@ -3,10 +3,19 @@
 {% block title %}Sign Up{% endblock %}
 
 {% block content %}
-  <h2>Sign up</h2>
-  <form method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">Sign Up</button>
-  </form>
+    <form method="post">
+      {% csrf_token %} {% for field in form %}
+        <div class="form-group">
+          <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+          {{ field }} {% if field.errors %}
+            <div class="error" role="alert">{{ field.errors }}</div>
+          {% endif %} {% if field.help_text %}
+            <p class="help-text">{{ field.help_text }}</p>
+          {% endif %}
+        </div>
+      {% endfor %}
+
+      <button class="button" type="submit">Sign Up</button>
+      <a href="{% url 'trade_view' type="bond" days_ago=10 %}" class="button button--cancel">Cancel</a>
+    </form>
 {% endblock %}
