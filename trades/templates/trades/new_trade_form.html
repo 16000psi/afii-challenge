@@ -1,0 +1,52 @@
+<div class="card">
+<input type="radio" id="bond" name="trade_type" value="bond"
+{% if type == "bond" %}
+checked
+{% endif %}
+onclick="javascript:window.location.href=`{% url 'trade_view' type='bond' days_ago=days_ago %}`; return false;"
+
+/>
+<label for="bond">Bond</label>
+
+<input type="radio" id="cds" name="trade_type" value="cds" 
+{% if type == "cds" %}
+checked
+{% endif %}
+onclick="javascript:window.location.href=`{% url 'trade_view' type='cds' days_ago=days_ago %}`; return false;"
+/>
+<label for="cds">CDS</label>
+
+<input type="radio" id="futures" name="trade_type" value="futures" 
+{% if type == "futures" %}
+checked
+{% endif %}
+onclick="javascript:window.location.href=`{% url 'trade_view' type='futures' days_ago=days_ago  %}`; return false;"
+/>
+<label for="futures">Futures</label>
+
+<input type="radio" id="fx" name="trade_type" value="fx"
+{% if type == "fx" %}
+checked
+{% endif %}
+onclick="javascript:window.location.href=`{% url 'trade_view' type='fx' days_ago=days_ago  %}`; return false;"
+/>
+<label for="fx">Fx</label>
+
+<form method="post">
+    {% csrf_token %}
+    {% for field in form %}
+        <div>
+            <label for="{{ field.id_for_label }}">{{ field.label }}:</label>
+            {{ field }}
+            {% if field.errors %}
+                <div class="error">
+                    {% for error in field.errors %}
+                        <p>{{ error }}</p>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </div>
+    {% endfor %}
+    <button type="submit" name="action" value="add_trade">Submit</button>
+</form>
+</div>

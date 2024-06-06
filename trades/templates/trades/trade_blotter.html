@@ -1,0 +1,52 @@
+<div class="card">
+<h2>Trade Blotter</h2>
+<div class="table-container">
+<table>
+    <thead>
+        <tr>
+            <th>Trade ID</th>
+            <th>Trade Date</th>
+            <th>Security ID</th>
+            <th>Username</th>
+            <th>Comment</th>
+            <th>Strategy</th>
+            <th>Strategy ID</th>
+            <th>Instrument Type</th>
+            <th>Price</th>
+            <th>Spread</th>
+            <th>Notional</th>
+            <th>Direction</th>
+            <th>No of Contracts</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for trade in potential_trades %}
+        <tr>
+            <td>{{ trade.trade_id }}</td>
+            <td>{{ trade.trade_date }}</td>
+            <td>{{ trade.security_id }}</td>
+            <td>{{ trade.username }}</td>
+            <td>{{ trade.comment }}</td>
+            <td>{{ trade.strategy }}</td>
+            <td>{{ trade.strategy_id }}</td>
+            <td>{{ trade.instrument_type }}</td>
+            <td>{{ trade.price }}</td>
+            <td>{{ trade.spread }}</td>
+            <td>{{ trade.notional }}</td>
+            <td>{{ trade.direction }}</td>
+            <td>{{ trade.no_of_contracts }}</td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="13">No potential trades available.</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+    </div>
+<form method="POST">
+    {% csrf_token %}
+    <button type="submit" name="action" value="finalise_trades">Finalise Trades</button>
+</form>
+
+</div>

@@ -22,7 +22,9 @@ class BaseTrade(models.Model):
     security_id = models.CharField(max_length=100)
     username = models.CharField(max_length=150, editable=False)
     comment = models.CharField(max_length=150, blank=True)
-    strategy = models.CharField(choices=STRATEGY_CHOICES, max_length=15, blank=True)
+    strategy = models.CharField(
+        choices=STRATEGY_CHOICES, max_length=15, blank=True, null=True
+    )
     strategy_id = models.CharField(max_length=100)
     instrument_type = models.CharField(
         max_length=10, choices=INSTRUMENT_CHOICES, editable=False

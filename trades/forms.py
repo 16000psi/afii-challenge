@@ -34,6 +34,7 @@ class BondForm(PotentialTradeForm):
             ("", "--"),
         ],
         widget=Select(),
+        required=False,
     )
 
 
@@ -54,9 +55,9 @@ class CDSForm(PotentialTradeForm):
             ("curves", "Curves"),
             ("use_of_proceeds", "Use of Proceeds"),
             ("", "--"),
-
         ],
         widget=Select(),
+        required=False,
     )
 
 
@@ -75,6 +76,7 @@ class FuturesForm(PotentialTradeForm):
             ("", "--"),
         ],
         widget=Select(),
+        required=False,
     )
 
 
@@ -93,4 +95,5 @@ class FXForm(PotentialTradeForm):
             ("", "--"),
         ],
         widget=Select(),
+        required=False,
     )

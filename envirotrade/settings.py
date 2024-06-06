@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 
+import os
 from pathlib import Path
 
 from django.urls import reverse_lazy
@@ -125,7 +126,11 @@ STATIC_URL = "static/"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
+LOGIN_URL = "/login/"
 
-LOGIN_REDIRECT_URL = reverse_lazy(
-    "trade_view", kwargs={"type": "bond", "days_ago": 10}
-)
+LOGIN_REDIRECT_URL = reverse_lazy("trade_view", kwargs={"type": "bond", "days_ago": 10})
+LOGOUT_REDIRECT_URL = reverse_lazy("login")
+
+STATICFILES_DIRS = [BASE_DIR / "envirotrade" / "staticfiles"]
+
+STATIC_ROOT = os.path.join(BASE_DIR, "static")
