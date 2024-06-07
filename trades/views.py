@@ -123,12 +123,12 @@ class SignUpView(generic.CreateView):
     template_name = "registration/signup.html"
 
 
-def get_trade_counts(request, days_ago):
+def get_trade_counts(request, days_ago, parameter):
     if request.method == "GET":
         today = timezone.now()
         start_date = today - timedelta(days=days_ago)
         trades = Trade.objects.filter(trade_date__range=[start_date, today])
-        trade_counts_qs = trades.values("instrument_type").annotate(
+        trade_counts_qs = trades.values(parameter).annotate(
             count=Count("trade_id")
         )
         trade_data = list(trade_counts_qs)

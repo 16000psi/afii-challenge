@@ -23,6 +23,8 @@ urlpatterns = [
         name="potential_trade_delete",
     ),
     path(
-        "trade_counts/<int:days_ago>/", views.get_trade_counts, name="get_trade_counts"
+        "trade_counts/<int:days_ago>/<str:parameter>/",
+        views.get_trade_counts,
+        name="get_trade_counts",
     ),
 ]

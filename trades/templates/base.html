@@ -11,12 +11,12 @@
             <link rel="stylesheet" href="{% static 'css/necolas-normalize.css' %}">
             <link rel="stylesheet" href="{% static 'css/main.css' %}">
         {% endblock css %}
-        <title>{% block title %} Trade App {% endblock title %}</title>
+    <title> {% block title %} Trade App {% endblock title %}</title>
     </head>
     <body>
         <header class="header">
             <div class="header__inner">
-                <h1 class="app-logo">Trade App</h1>
+<h1 class="app-logo"><a href="{% url 'trade_view' %}">Trade App</a></h1>
                 {% if user.is_authenticated %}
                     <p class="logged-in-message">You are logged in as <strong>{{ user.username }}</strong>.</p>
                 {% endif %}

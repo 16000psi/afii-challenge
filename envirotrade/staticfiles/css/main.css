@@ -386,24 +386,24 @@ header {
   }
   .flex-3 .card, flex-1 .card {
 
-    height: 307px;
+    /* height: 307px; */
 
   }
 }
 
-@media (min-width: 992px) {
-  .flex-3 .card, flex-1 .card {
-    height: 334px;
-
-  }
-}
-
-@media (min-width: 1200px) {
-  .flex-3 .card, flex-1 .card {
-    height: 361px;
-
-  }
-}
+/* @media (min-width: 992px) { */
+/*   .flex-3 .card, flex-1 .card { */
+/*     height: 334px; */
+/**/
+/*   } */
+/* } */
+/**/
+/* @media (min-width: 1200px) { */
+/*   .flex-3 .card, flex-1 .card { */
+/*     height: 361px; */
+/**/
+/*   } */
+/* } */
 
 /* ---------------------------------------------------- */
 /* EVENT LIST STUFF
@@ -582,22 +582,21 @@ header {
   }
 }
 
-/*   Card text styles */
+.card__underline {
+  border-top: 2px solid var(--color--white-opacity-1);
+  margin-bottom: 0.4rem;
+}
 
-/* .card__event-time { */
-/*   display: inline-block; */
-/*   margin-bottom: 0.4rem; */
-/*   color: var(--color--platinum); */
-/*   font-size: 0.55rem; */
-/* } */
-/**/
-/* .card__event-title { */
-/*   font-size: 0.9rem; */
-/*   margin-bottom: 0.3rem; */
-/*   overflow: hidden; */
-/*   text-overflow: ellipsis; */
-/*   white-space: nowrap; */
-/* } */
+
+/*  Card text styles */
+
+.card__title {
+  font-size: 0.9rem;
+  margin-bottom: 0.7rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
 /**/
 /* .card__event-description { */
 /*   color: var(--color--platinum); */
@@ -627,23 +626,16 @@ header {
 /*   margin-bottom: 0.4rem; */
 /* } */
 /**/
-/* @media (min-width: 768px) { */
-/*   .card__event-time { */
-/*     margin-bottom: 0.5rem; */
-/*     font-size: 0.6rem; */
-/*   } */
-/*   .card__event-title { */
-/*     font-size: 1rem; */
-/*   } */
-/* } */
-/* @media (min-width: 992px) { */
-/*   .card__event-time { */
-/*     font-size: 0.8rem; */
-/*   } */
-/*   .card__event-title { */
-/*     font-size: 1.1rem; */
-/*   } */
-/* } */
+@media (min-width: 768px) {
+  .card__title {
+    font-size: 1rem;
+  }
+}
+@media (min-width: 992px) {
+  .card__title {
+    font-size: 1.1rem;
+  }
+}
 
 /* ---------------------------------------------------- */
 /* EVENT DETAIL STUFF
@@ -683,10 +675,6 @@ header {
 /*   box-shadow: 0 0px 6px var(--color--white-opacity-9); */
 /* } */
 /**/
-/* .event-detail__underline { */
-/*   border-top: 2px ridge var(--color--white-opacity-1); */
-/*   margin-bottom: 0.4rem; */
-/* } */
 /**/
 /* /* Card spacing styles */ */
 /* .detail-card { */
@@ -800,7 +788,7 @@ form {
 }
 
 input[name="username"],
-input[name="password"] {
+input[name="password"], input, select {
   background-color: var(--color--white-opacity-1) !important;
   color: var(--color--platinum);
   padding: 2px;
@@ -860,8 +848,8 @@ input[name="password"] {
 table {
   width: 100%;
   border-collapse: collapse;
-  margin: 20px 0;
   text-align: left;
+  margin-bottom: 15px;
 }
 
 /* Caption Styles */

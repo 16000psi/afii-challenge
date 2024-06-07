@@ -1,5 +1,6 @@
 <div class="card">
-<h2 id="trade-blotter">Trade Blotter</h2>
+<h2 class="card__title" id="trade-blotter">Trade Blotter</h2>
+            <div class="card__underline" aria-hidden="true"></div>
       {% if potential_trades.paginator.num_pages > 1 %}
     <div class="pagination">
     <span class="step-links">
@@ -70,7 +71,7 @@
     </div>
 <form method="POST">
     {% csrf_token %}
-    <button type="submit" name="action" value="finalise_trades">Upload Trades</button>
+    <button class="button" type="submit" name="action" value="finalise_trades">Upload Trades</button>
 </form>
 
 </div>

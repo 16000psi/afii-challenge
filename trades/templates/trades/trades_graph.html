@@ -1,5 +1,7 @@
 <div id="graph" class="card">
-  <label for="days_ago">How long ago to view?</label>
+  <h2 class="card__title" id="chart-title">Trades by Instrument Type</h2>
+  <div class="card__underline" aria-hidden="true"></div>
+  <label for="days_ago">Trades from the last </label>
   <select name="days_ago" id="days_ago_selector" onchange="fetchTradeData()">
     <option value="1">1 Day</option>
     <option value="7">7 Days</option>
@@ -11,32 +13,50 @@
     <option value="1826">5 Years</option>
   </select>
   <canvas id="graph-container" class="graph"></canvas>
+  <select name="parameter" id="parameter_selector" onchange="fetchTradeData()">
+    <option value="instrument_type">Instrument Type</option>
+    <option value="strategy">Strategy</option>
+  </select>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script type="text/javascript">
     document.addEventListener('DOMContentLoaded', function () {
         fetchTradeData();
     });
 
     function fetchTradeData() {
-        var daysAgo = document.getElementById("days_ago_selector").value;
-        $.ajax({
-            url: '/trade_counts/' + daysAgo + '/',
-            method: 'GET',
-            dataType: 'json',
-            success: function (tradeData) {
-                updateChart(tradeData);
-            },
-            error: function (error) {
+        const daysAgo = document.getElementById("days_ago_selector").value;
+        const parameter = document.getElementById("parameter_selector").value;
+
+        updateChartTitle(parameter);
+
+        fetch(`/trade_counts/${daysAgo}/${parameter}/`)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(tradeData => {
+                updateChart(tradeData, parameter);
+            })
+            .catch(error => {
                 console.error('Error fetching trade data:', error);
-            }
-        });
+            });
     }
 
-    function updateChart(tradeData) {
-        const labels = tradeData.map(trade => trade.instrument_type);
+    function updateChartTitle(parameter) {
+        const chartTitle = document.getElementById('chart-title');
+        if (parameter === 'strategy') {
+            chartTitle.textContent = 'Trades by Strategy';
+        } else {
+            chartTitle.textContent = 'Trades by Instrument Type';
+        }
+    }
+
+    function updateChart(tradeData, parameter) {
+        const labels = tradeData.map(trade => trade[parameter]);
         const data = tradeData.map(trade => trade.count);
 
         const ctx = document.getElementById('graph-container').getContext('2d');
@@ -52,13 +72,35 @@
                     datasets: [{
                         label: 'Number of Trades',
                         data: data,
+                        backgroundColor: '#3beccd',
+                        borderColor: '#3beccd',
                         borderWidth: 1
                     }]
                 },
                 options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            labels: {
+                                color: '#dce0d9'
+                            },
+                            onClick: null // Disable the legend click functionality
+                        },
+                        title: {
+                            display: false,
+                        }
+                    },
                     scales: {
+                        x: {
+                            ticks: {
+                                color: '#dce0d9'
+                            }
+                        },
                         y: {
-                            beginAtZero: true
+                            beginAtZero: true,
+                            ticks: {
+                                color: '#dce0d9'
+                            }
                         }
                     }
                 }
