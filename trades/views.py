@@ -91,15 +91,13 @@ class PotentialTradeUpdateView(UpdateView):
     success_url = reverse_lazy("trade_view")
 
     def get_form_class(self):
-        potential_trade = self.get_object()
-        if potential_trade.instrument_type == "bond":
-            return BondForm
-        elif potential_trade.instrument_type == "cds":
-            return CDSForm
-        elif potential_trade.instrument_type == "futures":
-            return FuturesForm
-        elif potential_trade.instrument_type == "fx":
-            return FXForm
+        form_classes = {
+            TRADE_TYPE_BOND: BondForm,
+            TRADE_TYPE_CDS: CDSForm,
+            TRADE_TYPE_FUTURES: FuturesForm,
+            TRADE_TYPE_FX: FXForm,
+        }
+        return form_classes.get(self.get_object().instrument_type)
 
     def dispatch(self, request, *args, **kwargs):
         potential_trade = self.get_object()
