@@ -126,21 +126,21 @@ class SignUpView(generic.CreateView):
 
 def get_trade_counts(request, days_ago, parameter):
     if request.method == "GET":
-        today = timezone.now()
-        start_date = today - timedelta(days=days_ago)
-        trades = Trade.objects.filter(trade_date__range=[start_date, today])
-        trade_counts_qs = trades.values(parameter).annotate(count=Count("trade_id"))
-        trade_data = list(trade_counts_qs)
-        return JsonResponse(trade_data, safe=False)
+        try:
+            trade_counts = Trade.objects.get_trade_counts(days_ago, parameter)
+            trade_data = list(trade_counts)
+            return JsonResponse(trade_data, safe=False)
+        except Exception as e:
+            return JsonResponse({"error": str(e)}, status=500)
+    else:
+        return JsonResponse({"error": "Invalid request method"}, status=405)
 
 
 def get_type_counts(request, days_ago, instrument_type, metric):
     if request.method == "GET":
         try:
-            today = timezone.now()
-            start_date = today - timedelta(days=days_ago)
-            trades = Trade.objects.filter(
-                trade_date__range=[start_date, today], instrument_type=instrument_type
+            trades = Trade.objects.filter_by_date_range(days_ago).filter(
+                instrument_type=instrument_type
             )
             data = list(trades.values("trade_id", metric))
             df = pd.DataFrame(data)

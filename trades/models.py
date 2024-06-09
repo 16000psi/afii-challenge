@@ -1,5 +1,9 @@
+from datetime import timedelta
+
 from django.core.exceptions import ValidationError
 from django.db import models
+from django.db.models import Count
+from django.utils import timezone
 
 
 class BaseTrade(models.Model):
@@ -72,7 +76,23 @@ class PotentialTrade(BaseTrade):
         return f"Potential {self.instrument_type} trade {self.trade_id} - {self.security_id} by {self.username}"
 
 
+class TradeQuerySet(models.QuerySet):
+    def filter_by_date_range(self, days_ago):
+        today = timezone.now()
+        start_date = today - timedelta(days=days_ago)
+        return self.filter(trade_date__range=[start_date, today])
+
+    def get_trade_counts(self, days_ago, parameter):
+        return (
+            self.filter_by_date_range(days_ago)
+            .values(parameter)
+            .annotate(count=Count("trade_id"))
+        )
+
+
 class Trade(BaseTrade):
+    objects = TradeQuerySet.as_manager()
+
     timestamp = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
