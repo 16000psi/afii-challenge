@@ -27,4 +27,9 @@ urlpatterns = [
         views.get_trade_counts,
         name="get_trade_counts",
     ),
+    path(
+        "type_chart/<int:days_ago>/<str:instrument_type>/<str:metric>/",
+        views.get_type_counts,
+        name="get_type_counts",
+    ),
 ]

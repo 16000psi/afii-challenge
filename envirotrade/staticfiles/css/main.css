@@ -576,11 +576,11 @@ header {
 
 }
 
-@media (min-width: 700px) {
-  .card {
-    margin-bottom: 1.5rem;
-  }
-}
+/* @media (min-width: 700px) { */
+/*   .card { */
+/*     margin-bottom: 1.5rem; */
+/*   } */
+/* } */
 
 .card__underline {
   border-top: 2px solid var(--color--white-opacity-1);

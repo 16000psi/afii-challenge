@@ -2,7 +2,7 @@
   <h2 class="card__title" id="chart-title">Trades by Instrument Type</h2>
   <div class="card__underline" aria-hidden="true"></div>
   <label for="days_ago">Trades from the last </label>
-  <select name="days_ago" id="days_ago_selector" onchange="fetchTradeData()">
+  <select name="days_ago" id="days_ago_selector" onchange="fetchAllData()">
     <option value="1">1 Day</option>
     <option value="7">7 Days</option>
     <option value="10" selected>10 Days</option>
@@ -19,92 +19,229 @@
   </select>
 </div>
 
+<div id="price-graph" class="card">
+  <h2 class="card__title">Price Spread by Instrument Type</h2>
+  <div class="card__underline" aria-hidden="true"></div>
+  <label for="instrument_type">Instrument Type: </label>
+  <select
+    name="instrument_type"
+    id="instrument_type_selector"
+    onchange="fetchPriceData()"
+  >
+    <option value="bond" selected>Bond</option>
+    <option value="cds">CDS</option>
+    <option value="futures">Futures</option>
+    <option value="fx">FX</option>
+  </select>
+  <select name="metric" id="metric_selector" onchange="fetchPriceData()">
+    <option value="price" selected>Price</option>
+    <option value="spread">Spread</option>
+    <option value="notional">Notional</option>
+    <option value="no_of_contracts">No. of Contracts</option>
+  </select>
+
+  <canvas id="price-graph-container" class="graph"></canvas>
+</div>
+
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script type="text/javascript">
-    document.addEventListener('DOMContentLoaded', function () {
-        fetchTradeData();
-    });
+  document.addEventListener("DOMContentLoaded", function () {
+    fetchAllData();
+  });
 
-    function fetchTradeData() {
-        const daysAgo = document.getElementById("days_ago_selector").value;
-        const parameter = document.getElementById("parameter_selector").value;
+  function fetchAllData() {
+    fetchTradeData();
+    fetchPriceData();
+  }
 
-        updateChartTitle(parameter);
+  function fetchTradeData() {
+    const daysAgo = document.getElementById("days_ago_selector").value;
+    const parameter = document.getElementById("parameter_selector").value;
 
-        fetch(`/trade_counts/${daysAgo}/${parameter}/`)
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                return response.json();
-            })
-            .then(tradeData => {
-                updateChart(tradeData, parameter);
-            })
-            .catch(error => {
-                console.error('Error fetching trade data:', error);
-            });
-    }
+    updateChartTitle(parameter);
 
-    function updateChartTitle(parameter) {
-        const chartTitle = document.getElementById('chart-title');
-        if (parameter === 'strategy') {
-            chartTitle.textContent = 'Trades by Strategy';
-        } else {
-            chartTitle.textContent = 'Trades by Instrument Type';
+    fetch(`/trade_counts/${daysAgo}/${parameter}/`)
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Network response was not ok");
         }
+        return response.json();
+      })
+      .then((tradeData) => {
+        updateChart(tradeData, parameter);
+      })
+      .catch((error) => {
+        console.error("Error fetching trade data:", error);
+      });
+  }
+
+  function updateChartTitle(parameter) {
+    const chartTitle = document.getElementById("chart-title");
+    if (parameter === "strategy") {
+      chartTitle.textContent = "Trades by Strategy";
+    } else {
+      chartTitle.textContent = "Trades by Instrument Type";
     }
+  }
 
-    function updateChart(tradeData, parameter) {
-        const labels = tradeData.map(trade => trade[parameter]);
-        const data = tradeData.map(trade => trade.count);
+  function updateChart(tradeData, parameter) {
+    const labels = tradeData.map((trade) => trade[parameter]);
+    const data = tradeData.map((trade) => trade.count);
 
-        const ctx = document.getElementById('graph-container').getContext('2d');
-        if (window.tradeChart) {
-            window.tradeChart.data.labels = labels;
-            window.tradeChart.data.datasets[0].data = data;
-            window.tradeChart.update();
-        } else {
-            window.tradeChart = new Chart(ctx, {
-                type: 'bar',
-                data: {
-                    labels: labels,
-                    datasets: [{
-                        label: 'Number of Trades',
-                        data: data,
-                        backgroundColor: '#3beccd',
-                        borderColor: '#3beccd',
-                        borderWidth: 1
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    plugins: {
-                        legend: {
-                            labels: {
-                                color: '#dce0d9'
-                            },
-                            onClick: null // Disable the legend click functionality
-                        },
-                        title: {
-                            display: false,
-                        }
-                    },
-                    scales: {
-                        x: {
-                            ticks: {
-                                color: '#dce0d9'
-                            }
-                        },
-                        y: {
-                            beginAtZero: true,
-                            ticks: {
-                                color: '#dce0d9'
-                            }
-                        }
-                    }
-                }
-            });
+    const ctx = document.getElementById("graph-container").getContext("2d");
+    if (window.tradeChart) {
+      window.tradeChart.data.labels = labels;
+      window.tradeChart.data.datasets[0].data = data;
+      window.tradeChart.update();
+    } else {
+      window.tradeChart = new Chart(ctx, {
+        type: "bar",
+        data: {
+          labels: labels,
+          datasets: [
+            {
+              label: "Number of Trades",
+              data: data,
+              backgroundColor: "#3beccd",
+              borderColor: "#3beccd",
+              borderWidth: 1,
+            },
+          ],
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            legend: {
+              labels: {
+                color: "#dce0d9",
+              },
+              onClick: null,
+            },
+            title: {
+              display: false,
+            },
+          },
+          scales: {
+            x: {
+              ticks: {
+                color: "#dce0d9",
+              },
+            },
+            y: {
+              beginAtZero: true,
+              ticks: {
+                color: "#dce0d9",
+              },
+            },
+          },
+        },
+      });
+    }
+  }
+
+  const metricOptions = {
+    bond: [
+      { value: "price", text: "Price" },
+      { value: "spread", text: "Spread" },
+      { value: "notional", text: "Notional" },
+      { value: "direction", text: "Direction" },
+    ],
+    cds: [
+      { value: "spread", text: "Spread" },
+      { value: "notional", text: "Notional" },
+      { value: "direction", text: "Direction" },
+    ],
+    futures: [
+      { value: "price", text: "Price" },
+      { value: "no_of_contracts", text: "No_of_contracts" },
+      { value: "direction", text: "Direction" },
+    ],
+    fx: [
+      { value: "price", text: "Price" },
+      { value: "notional", text: "Notional" },
+      { value: "direction", text: "Direction" },
+    ],
+  };
+
+  function fetchPriceData() {
+    const instrumentType = document.getElementById(
+      "instrument_type_selector",
+    ).value;
+    const metric = document.getElementById("metric_selector").value;
+    const daysAgo = document.getElementById("days_ago_selector").value;
+    const parameter = document.getElementById("parameter_selector").value;
+
+    fetch(`/type_chart/${daysAgo}/${instrumentType}/${metric}/`)
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Network response was not ok");
         }
+        return response.json();
+      })
+      .then((priceData) => {
+        updatePriceChart(priceData);
+      })
+      .catch((error) => {
+        console.error("Error fetching price data:", error);
+      });
+  }
+
+  function updatePriceChart(priceData) {
+    const labels = priceData.map((data) => data.price_bin);
+    const data = priceData.map((data) => data.count);
+    console.log(labels);
+    console.log(data);
+
+    const ctx = document
+      .getElementById("price-graph-container")
+      .getContext("2d");
+    if (window.priceChart) {
+      window.priceChart.data.labels = labels;
+      window.priceChart.data.datasets[0].data = data;
+      window.priceChart.update();
+    } else {
+      window.priceChart = new Chart(ctx, {
+        type: "line",
+        data: {
+          labels: labels,
+          datasets: [
+            {
+              label: "Price Spread",
+              data: data,
+              backgroundColor: "rgba(59, 236, 205, 0.2)",
+              borderColor: "#fd5765",
+              borderWidth: 1,
+            },
+          ],
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            legend: {
+              labels: {
+                color: "#dce0d9",
+              },
+              onClick: null, // Disable the legend click functionality
+            },
+            title: {
+              display: false,
+            },
+          },
+          scales: {
+            x: {
+              ticks: {
+                color: "#dce0d9",
+              },
+            },
+            y: {
+              beginAtZero: true,
+              ticks: {
+                color: "#dce0d9",
+              },
+            },
+          },
+        },
+      });
     }
+  }
 </script>

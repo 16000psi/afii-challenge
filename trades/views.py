@@ -1,9 +1,11 @@
 from datetime import timedelta
 
+import pandas as pd
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import UserCreationForm
 from django.core.paginator import Paginator
-from django.db.models import Count
+from django.db.models import Count, F, FloatField, Max, Min
+from django.db.models.functions import Cast
 from django.http import HttpResponseForbidden, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse_lazy
@@ -128,8 +130,36 @@ def get_trade_counts(request, days_ago, parameter):
         today = timezone.now()
         start_date = today - timedelta(days=days_ago)
         trades = Trade.objects.filter(trade_date__range=[start_date, today])
-        trade_counts_qs = trades.values(parameter).annotate(
-            count=Count("trade_id")
-        )
+        trade_counts_qs = trades.values(parameter).annotate(count=Count("trade_id"))
         trade_data = list(trade_counts_qs)
         return JsonResponse(trade_data, safe=False)
+
+
+def get_type_counts(request, days_ago, instrument_type, metric):
+    if request.method == "GET":
+        today = timezone.now()
+        start_date = today - timedelta(days=days_ago)
+        trades = Trade.objects.filter(
+            trade_date__range=[start_date, today], instrument_type=instrument_type
+        )
+        # queryset = Trade.objects.all()
+
+        data = list(trades.values("trade_id", metric))
+        df = pd.DataFrame(data)
+        df[metric] = df[metric].round(0).astype(int)
+
+        df["price_bin"] = pd.cut(df[metric], bins=8)
+
+        grouped = df.groupby("price_bin")
+
+        for bin_label, bin_group in grouped:
+            print(f"Bin: {bin_label}")
+            print(bin_group)
+        price_distribution = [
+            {
+                "price_bin": f"{int(bin_label.left)}-{int(bin_label.right)}",
+                "count": len(bin_group),
+            }
+            for bin_label, bin_group in grouped
+        ]
+        return JsonResponse(price_distribution, safe=False)

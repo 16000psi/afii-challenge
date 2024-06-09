@@ -17,7 +17,7 @@ class BaseTrade(models.Model):
         ("use_of_proceeds", "Use of Proceeds"),
         ("hedge", "Hedge"),
     ]
-    trade_date = models.DateTimeField()  # needs to be just date
+    trade_date = models.DateTimeField()
     trade_id = models.AutoField(primary_key=True)
     security_id = models.CharField(max_length=100)
     username = models.CharField(max_length=150, editable=False)
