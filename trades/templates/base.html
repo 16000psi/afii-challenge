@@ -35,6 +35,10 @@
         </header>
         <main class="layout">
             {% block content %}{% endblock content %}
+            {% block javascript %}
+                <script type="module" src="{% static 'scripts/main.js' %}"></script>
+            {% endblock javascript %}
+
         </main>
     </body>
 </html>
