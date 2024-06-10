@@ -15,6 +15,7 @@ from .constants import (
     TRADE_TYPE_FX,
 )
 from .forms import BondForm, CDSForm, FuturesForm, FXForm, PotentialTradeForm
+from .mixins import AuthenticatedTradeMixin
 from .models import PotentialTrade, Trade
 
 
@@ -84,7 +85,7 @@ def trade_view(request):
     )
 
 
-class PotentialTradeUpdateView(UpdateView):
+class PotentialTradeUpdateView(AuthenticatedTradeMixin, UpdateView):
     model = PotentialTrade
     template_name = "trades/potential_trade_form.html"
     context_object_name = "trade"
@@ -98,12 +99,6 @@ class PotentialTradeUpdateView(UpdateView):
             TRADE_TYPE_FX: FXForm,
         }
         return form_classes.get(self.get_object().instrument_type)
-
-    def dispatch(self, request, *args, **kwargs):
-        potential_trade = self.get_object()
-        if request.user.username != potential_trade.username:
-            return HttpResponseForbidden("You are not allowed to edit this trade.")
-        return super().dispatch(request, *args, **kwargs)
 
 
 @login_required
