@@ -1,14 +1,10 @@
-from datetime import timedelta
-
 import pandas as pd
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import UserCreationForm
 from django.core.paginator import Paginator
-from django.db.models import Count
 from django.http import HttpResponseForbidden, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse_lazy
-from django.utils import timezone
 from django.views import generic
 from django.views.generic.edit import UpdateView
 
@@ -34,42 +30,46 @@ def trade_view(request):
     if request.method == "POST":
         instrument_type = request.POST.get("trade_type")
         action = request.POST.get("action")
-        if action == "add_trade":
-            if instrument_type == TRADE_TYPE_BOND:
-                form = BondForm(request.POST)
-            elif instrument_type == TRADE_TYPE_CDS:
-                form = CDSForm(request.POST)
-            elif instrument_type == TRADE_TYPE_FX:
-                form = FXForm(request.POST)
-            elif instrument_type == TRADE_TYPE_FUTURES:
-                form = FuturesForm(request.POST)
 
-            if form.is_valid():
-                potential_trade = form.save(commit=False)
-                potential_trade.instrument_type = instrument_type
-                potential_trade.username = request.user.username
-                potential_trade.save()
+        form_classes = {
+            TRADE_TYPE_BOND: BondForm,
+            TRADE_TYPE_CDS: CDSForm,
+            TRADE_TYPE_FX: FXForm,
+            TRADE_TYPE_FUTURES: FuturesForm,
+        }
+
+        if action == "add_trade":
+            form_class = form_classes.get(instrument_type)
+            if form_class:
+                form = form_class(request.POST)
+                if form.is_valid():
+                    potential_trade = form.save(commit=False)
+                    potential_trade.instrument_type = instrument_type
+                    potential_trade.username = request.user.username
+                    potential_trade.save()
+                    return redirect("trade_view")
 
         elif action == "finalise_trades":
-            for trade in potential_trades:
-                trade_data = {
-                    "trade_date": trade.trade_date,
-                    "security_id": trade.security_id,
-                    "username": trade.username,
-                    "comment": trade.comment,
-                    "strategy": trade.strategy,
-                    "strategy_id": trade.strategy_id,
-                    "instrument_type": trade.instrument_type,
-                    "price": trade.price,
-                    "spread": trade.spread,
-                    "notional": trade.notional,
-                    "direction": trade.direction,
-                    "no_of_contracts": trade.no_of_contracts,
-                }
-
-                Trade.objects.create(**trade_data)
-                trade.delete()
-        return redirect("trade_view")
+            trade_data_list = [
+                Trade(
+                    trade_date=trade.trade_date,
+                    security_id=trade.security_id,
+                    username=trade.username,
+                    comment=trade.comment,
+                    strategy=trade.strategy,
+                    strategy_id=trade.strategy_id,
+                    instrument_type=trade.instrument_type,
+                    price=trade.price,
+                    spread=trade.spread,
+                    notional=trade.notional,
+                    direction=trade.direction,
+                    no_of_contracts=trade.no_of_contracts,
+                )
+                for trade in potential_trades
+            ]
+            Trade.objects.bulk_create(trade_data_list)
+            potential_trades.delete()
+            return redirect("trade_view")
 
     else:
         form = PotentialTradeForm()
