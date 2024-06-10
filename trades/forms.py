@@ -1,4 +1,5 @@
 from django import forms
+from django.forms import Textarea
 from django.forms.widgets import DateInput, Select
 from django.utils import timezone
 
@@ -7,15 +8,30 @@ from .models import PotentialTrade
 
 class PotentialTradeForm(forms.ModelForm):
     class Meta:
-        fields = "__all__"
         model = PotentialTrade
+        fields = "__all__"
         widgets = {
             "trade_date": DateInput(attrs={"type": "date"}),
+            "comment": Textarea(attrs={"rows": 2, "style": "resize: vertical;"}),
         }
 
     def __init__(self, *args, **kwargs):
         super(PotentialTradeForm, self).__init__(*args, **kwargs)
         self.fields["trade_date"].initial = timezone.now()
+        self.order_fields(
+            [
+                "trade_date",
+                "security_id",
+                "strategy",
+                "strategy_id",
+                "price",
+                "spread",
+                "notional",
+                "no_of_contracts",
+                "direction",
+                "comment",
+            ]
+        )
 
 
 class BondForm(PotentialTradeForm):
@@ -41,6 +57,22 @@ class BondForm(PotentialTradeForm):
         required=False,
     )
 
+    def __init__(self, *args, **kwargs):
+        super(BondForm, self).__init__(*args, **kwargs)
+        self.order_fields(
+            [
+                "trade_date",
+                "security_id",
+                "strategy",
+                "strategy_id",
+                "price",
+                "spread",
+                "notional",
+                "direction",
+                "comment",
+            ]
+        )
+
 
 class CDSForm(PotentialTradeForm):
     class Meta(PotentialTradeForm.Meta):
@@ -64,6 +96,21 @@ class CDSForm(PotentialTradeForm):
         required=False,
     )
 
+    def __init__(self, *args, **kwargs):
+        super(CDSForm, self).__init__(*args, **kwargs)
+        self.order_fields(
+            [
+                "trade_date",
+                "security_id",
+                "strategy",
+                "strategy_id",
+                "spread",
+                "notional",
+                "direction",
+                "comment",
+            ]
+        )
+
 
 class FuturesForm(PotentialTradeForm):
     class Meta(PotentialTradeForm.Meta):
@@ -83,6 +130,21 @@ class FuturesForm(PotentialTradeForm):
         required=False,
     )
 
+    def __init__(self, *args, **kwargs):
+        super(FuturesForm, self).__init__(*args, **kwargs)
+        self.order_fields(
+            [
+                "trade_date",
+                "security_id",
+                "strategy",
+                "strategy_id",
+                "price",
+                "no_of_contracts",
+                "direction",
+                "comment",
+            ]
+        )
+
 
 class FXForm(PotentialTradeForm):
     class Meta(PotentialTradeForm.Meta):
@@ -101,3 +163,18 @@ class FXForm(PotentialTradeForm):
         widget=Select(),
         required=False,
     )
+
+    def __init__(self, *args, **kwargs):
+        super(FXForm, self).__init__(*args, **kwargs)
+        self.order_fields(
+            [
+                "trade_date",
+                "security_id",
+                "strategy",
+                "strategy_id",
+                "price",
+                "notional",
+                "direction",
+                "comment",
+            ]
+        )
