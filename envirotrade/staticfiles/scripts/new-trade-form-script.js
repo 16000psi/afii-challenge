@@ -69,6 +69,7 @@ class NewTradeFormScript {
       this.formGroups[key].forEach((field) => {
         field.style.display = "none";
         field.querySelector("input, select, textarea").removeAttribute("required");
+        field.removeAttribute("title");
       });
     }
   };
@@ -82,6 +83,7 @@ class NewTradeFormScript {
         break;
       case "cds":
         this.showFields(['spread', 'notional', 'direction']);
+        this.addTooltipToDirection();
         break;
       case "futures":
         this.showFields(['price', 'direction', 'no_of_contracts']);
@@ -99,6 +101,13 @@ class NewTradeFormScript {
         fieldElement.style.display = "block";
         fieldElement.querySelector("input, select, textarea").setAttribute("required", "required");
       });
+    });
+  };
+
+  addTooltipToDirection = () => {
+    const tooltipText = "Buy (Short risk) / Sell (Long risk)";
+    this.formGroups.direction.forEach((fieldElement) => {
+      fieldElement.setAttribute("title", tooltipText);
     });
   };
 }
