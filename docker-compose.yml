@@ -1,0 +1,47 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:14
+    container_name: custom_db_container
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_DB: mydatabase
+      POSTGRES_USER: myuser
+      POSTGRES_PASSWORD: mypassword
+
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: my_custom_web_image:latest
+    container_name: custom_web_container
+    volumes:
+      - .:/usr/src/app
+      - static_volume:/usr/src/app/static
+    expose:
+    - "8001"
+    depends_on:
+      - db
+    environment:
+      DATABASE_NAME: mydatabase
+      DATABASE_USER: myuser
+      DATABASE_PASSWORD: mypassword
+      DATABASE_HOST: db
+      DATABASE_PORT: 5432
+
+  nginx:
+    image: nginx:latest
+    container_name: custom_nginx_container
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./nginx:/etc/nginx/conf.d
+      - static_volume:/usr/src/app/static
+    depends_on:
+      - web
+
+volumes:
+  postgres_data:
+  static_volume:
