@@ -34,9 +34,13 @@ class BaseTrade(models.Model):
         max_length=10, choices=INSTRUMENT_CHOICES, editable=False
     )
 
-    price = models.FloatField(null=True, blank=True)
-    spread = models.FloatField(null=True, blank=True)
-    notional = models.FloatField(null=True, blank=True)
+    price = models.DecimalField(null=True, blank=True, max_digits=20, decimal_places=12)
+    spread = models.DecimalField(
+        null=True, blank=True, max_digits=20, decimal_places=13
+    )
+    notional = models.DecimalField(
+        null=True, blank=True, max_digits=20, decimal_places=12
+    )
     DIRECTION_CHOICES = [
         ("buy", "Buy"),
         ("sell", "Sell"),
