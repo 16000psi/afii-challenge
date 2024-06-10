@@ -1,5 +1,6 @@
 from django.contrib.auth.views import LoginView, LogoutView
 from django.urls import path
+from django.views.generic.base import RedirectView
 
 from . import views
 
@@ -32,4 +33,5 @@ urlpatterns = [
         views.get_type_counts,
         name="get_type_counts",
     ),
+    path("", RedirectView.as_view(url="/trade/", permanent=True)),
 ]
