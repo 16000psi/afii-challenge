@@ -23,7 +23,9 @@ from .models import PotentialTrade, Trade
 @login_required
 def trade_view(request):
     form = None
-    potential_trades = PotentialTrade.objects.filter(username=request.user.username)
+    potential_trades = PotentialTrade.objects.filter(
+        username=request.user.username
+    ).order_by("trade_date")
 
     paginator = Paginator(potential_trades, 10)
     page_number = request.GET.get("page")
