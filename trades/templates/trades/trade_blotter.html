@@ -1,3 +1,4 @@
+{% load custom_filters %}
 <div class="card">
 <h2 class="card__title" id="trade-blotter">Trade Blotter</h2>
             <div class="card__underline" aria-hidden="true"></div>
@@ -52,9 +53,9 @@
             <td>{{ trade.security_id }}</td>
             <td>{{ trade.username }}</td>
             <td>{{ trade.comment }}</td>
-            <td>{{ trade.strategy }}</td>
+            <td>{{ trade.strategy|strategy_prettifier }}</td>
             <td>{{ trade.strategy_id }}</td>
-            <td>{{ trade.instrument_type }}</td>
+            <td>{{ trade.instrument_type|instrument_type_prettifier }}</td>
             <td>{{ trade.price|default_if_none:"" }}</td>
             <td>{{ trade.spread|default_if_none:"" }}</td>
             <td>{{ trade.notional|default_if_none:"" }}</td>
