@@ -661,7 +661,7 @@ tbody td {
   color: var(--color--black);
 }
 /* ---------------------- */
-/* ERROR / MESSAGE STYLES */
+/* ERROR / MESSAGE / ICON STYLES */
 /* ---------------------- */
 
 .error > * {
@@ -712,4 +712,20 @@ tbody td {
 .popup-message.show {
   opacity: 1;
   top: 20px;
+}
+
+
+.action-icon {
+  width: 20px;
+  padding-right: 3px;
+  height: 20px;
+}
+
+@media (max-width: 600px) {
+  .action-icon {
+    width: 16px;
+    height: 16px;
+      padding-right: 7px;
+
+  }
 }

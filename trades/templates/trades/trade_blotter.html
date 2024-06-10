@@ -45,9 +45,19 @@
     <tbody>
         {% for trade in potential_trades %}
         <tr>
-          <td><a href="{% url 'potential_trade_edit' pk=trade.trade_id %}">✏️</a>
-<a href="{% url 'potential_trade_delete' pk=trade.trade_id %}#trade-blotter">❌</a>
-          </td>
+            <td>
+                <a href="{% url 'potential_trade_edit' pk=trade.trade_id %}">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil action-icon" viewBox="0 0 16 16">
+                        <path d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168l10-10zM11.207 2.5 13.5 4.793 4.354 13.939l-2.646.707.707-2.646L11.207 2.5zM12 1.207 14.793 4 13.5 5.293 10.707 2.5 12 1.207z"/>
+                    </svg>
+                </a>
+                <a href="{% url 'potential_trade_delete' pk=trade.trade_id %}#trade-blotter">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash action-icon" viewBox="0 0 16 16">
+                        <path d="M5.5 5.5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5zm2 0a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v7a.5.5 0 0 0 1 0v-7z"/>
+                        <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4H2.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H5.5a1 1 0 0 1 1-1h3a1 1 0 0 1 1 1H14.5a1 1 0 0 1 1 1v1zM11.5 4v9H4.5V4h7zm1-2v1H3.5V2H5v-.5a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 .5.5V2h1z"/>
+                    </svg>
+                </a>
+            </td>
             <td>{{ trade.trade_id }}</td>
             <td>{{ trade.trade_date|date:"Y/m/d" }}</td>
             <td>{{ trade.security_id }}</td>
