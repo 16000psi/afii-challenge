@@ -1,4 +1,3 @@
-
 @charset "UTF-8";
 :root {
   --color--coral: #fd5765;
@@ -37,32 +36,31 @@
   box-sizing: border-box;
 }
 
-html, body {
+html,
+body {
   width: 100%;
   min-width: 100%;
   overflow-x: auto;
-
 }
 
 /* Form and button resets */
 
 form {
-    display: inline;
-    margin: 0;
-    padding: 0;
+  display: inline;
+  margin: 0;
+  padding: 0;
 }
 
 form button {
-    background: none;
-    border: none;
-    color: inherit;
-    font: inherit;
-    cursor: pointer;
-    text-decoration: none;
-    padding: 0;
-    margin: 0;
+  background: none;
+  border: none;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+  text-decoration: none;
+  padding: 0;
+  margin: 0;
 }
-
 
 /* BASE FONT SIZES */
 html {
@@ -203,12 +201,10 @@ header {
 
 .app-logo:hover {
   animation: oscillateTextShadow 0.2s infinite;
-  
 }
 
 /* logo sizes */
 .app-logo {
-
   padding-left: 18px;
   font-size: 1rem;
 }
@@ -329,16 +325,14 @@ header {
   order: 3;
 }
 
-
-
-
 @media (min-width: 768px) {
   .flex-container {
     flex-direction: row;
     flex-wrap: wrap;
   }
 
-  .flex-1, .flex-3 {
+  .flex-1,
+  .flex-3 {
     flex: 1 1 49%;
     max-width: 49%;
   }
@@ -358,10 +352,9 @@ header {
   .flex-2 {
     order: 3;
   }
-  .flex-3 .card, flex-1 .card {
-
+  .flex-3 .card,
+  flex-1 .card {
     /* height: 307px; */
-
   }
 }
 
@@ -381,14 +374,12 @@ header {
 .card {
   padding: 0.5rem 0.5rem 1rem 0.5rem;
   margin-bottom: 1rem;
-
 }
 
 .card__underline {
   border-top: 2px solid var(--color--white-opacity-1);
   margin-bottom: 0.4rem;
 }
-
 
 /*  Card text styles */
 
@@ -411,7 +402,7 @@ header {
   }
 }
 
-/* Radio styles */ 
+/* Radio styles */
 
 input[type="radio"] {
   margin-left: 10px;
@@ -419,43 +410,43 @@ input[type="radio"] {
   margin-bottom: 20px;
   background: red;
 }
-input[type='radio']:after {
-    width: 15px;
-    height: 15px;
-    border-radius: 10px;
-    top: -2px;
-    left: -1px;
-    position: relative;
-    background-color: var(--color--lagoon);
-    content: '';
-    display: inline-block;
-    visibility: visible;
-    border: 2px solid white;
+input[type="radio"]:after {
+  width: 15px;
+  height: 15px;
+  border-radius: 10px;
+  top: -2px;
+  left: -1px;
+  position: relative;
+  background-color: var(--color--lagoon);
+  content: "";
+  display: inline-block;
+  visibility: visible;
+  border: 2px solid white;
 }
 
-input[type='radio']:checked:after {
-    width: 15px;
-    height: 15px;
-    border-radius: 10px;
-    top: -2px;
-    left: -1px;
-    position: relative;
-    background-color: var(--color--coral);
-    content: '';
-    display: inline-block;
-    visibility: visible;
-    border: 2px solid white;
+input[type="radio"]:checked:after {
+  width: 15px;
+  height: 15px;
+  border-radius: 10px;
+  top: -2px;
+  left: -1px;
+  position: relative;
+  background-color: var(--color--coral);
+  content: "";
+  display: inline-block;
+  visibility: visible;
+  border: 2px solid white;
 }
 
 @media (min-width: 1200px) {
-  input[type='radio']:after {
-      top: -5px;
-      left: -1px;
+  input[type="radio"]:after {
+    top: -5px;
+    left: -1px;
   }
 
-  input[type='radio']:checked:after {
-      top: -5px;
-      left: -1px;
+  input[type="radio"]:checked:after {
+    top: -5px;
+    left: -1px;
   }
 }
 
@@ -469,7 +460,9 @@ form {
 }
 
 input[name="username"],
-input[name="password"], input, select {
+input[name="password"],
+input,
+select {
   background-color: var(--color--white-opacity-1) !important;
   color: var(--color--platinum);
   padding: 2px;
@@ -515,7 +508,6 @@ input[name="password"], input, select {
   margin-top: 15px;
   display: flex;
   justify-content: center;
-
 }
 /* Pagination styles */
 
@@ -537,7 +529,9 @@ input[name="password"], input, select {
   padding: 5px 10px;
   border: 1px solid var(--color--white-opacity-5);
   border-radius: 3px;
-  transition: background-color 0.3s, color 0.3s;
+  transition:
+    background-color 0.3s,
+    color 0.3s;
 }
 
 .step-links a:hover {
@@ -562,11 +556,10 @@ input[name="password"], input, select {
 /* ---------------------- */
 
 .table-container {
-  overflow-x: auto; 
+  overflow-x: auto;
   -webkit-overflow-scrolling: touch;
   max-width: 100%;
   margin: 0 auto;
-  
 }
 
 .flex-2 {
@@ -674,4 +667,49 @@ tbody td {
 .error > * {
   margin: 10px 0 10px 0;
   font-size: 0.8rem;
+}
+
+.popup-message {
+  position: fixed;
+  top: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 9999;
+  padding: 10px 20px;
+  background-color: var(--color--black-russian);
+  color: white;
+  border-radius: 5px;
+  opacity: 0;
+  transition:
+    opacity 0.5s,
+    top 0.5s;
+  border: 1px solid var(--color--white-opacity-20);
+}
+
+.popup-message::before {
+  content: "•";
+  font-size: 30px;
+  margin-right: 10px;
+  vertical-align: middle;
+}
+
+.popup-message.success::before {
+  color: var(--color--lagoon);
+}
+
+.popup-message.error::before {
+  color: var(--color--coral);
+}
+
+.popup-message.warning::before {
+  color: var(--color--coral);
+}
+
+.popup-message.info::before {
+  color: var(--color--white-opacity-20);
+}
+
+.popup-message.show {
+  opacity: 1;
+  top: 20px;
 }

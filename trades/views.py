@@ -1,4 +1,5 @@
 import pandas as pd
+from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import UserCreationForm
 from django.core.paginator import Paginator
@@ -48,7 +49,15 @@ def trade_view(request):
                     potential_trade.instrument_type = instrument_type
                     potential_trade.username = request.user.username
                     potential_trade.save()
+                    messages.success(request, "Trade added successfully.")
                     return redirect("trade_view")
+                else:
+                    messages.error(
+                        request,
+                        "The trade could not be added. Please check the form for errors.",
+                    )
+            else:
+                messages.error(request, "Invalid instrument type selected.")
 
         elif action == "finalise_trades":
             trade_data_list = [
@@ -70,6 +79,7 @@ def trade_view(request):
             ]
             Trade.objects.bulk_create(trade_data_list)
             potential_trades.delete()
+            messages.success(request, "Trades uploaded successfully.")
             return redirect("trade_view")
 
     else:
@@ -100,12 +110,24 @@ class PotentialTradeUpdateView(AuthenticatedTradeMixin, UpdateView):
         }
         return form_classes.get(self.get_object().instrument_type)
 
+    def form_valid(self, form):
+        messages.success(self.request, "Trade saved successfully.")
+        return super().form_valid(form)
+
+    def form_invalid(self, form):
+        messages.error(
+            self.request,
+            "The trade could not be updated. Please check the form for errors.",
+        )
+        return super().form_invalid(form)
+
 
 @login_required
 def delete_potential_trade(request, pk):
     potential_trade = get_object_or_404(PotentialTrade, pk=pk)
     if request.user.username == potential_trade.username:
         potential_trade.delete()
+        messages.success(request, "Trade deleted successfully.")
         return redirect(reverse_lazy("trade_view"))
     else:
         return HttpResponseForbidden("You are not allowed to delete this trade.")
@@ -115,6 +137,11 @@ class SignUpView(generic.CreateView):
     form_class = UserCreationForm
     success_url = reverse_lazy("trade_view")
     template_name = "registration/signup.html"
+
+    def form_valid(self, form):
+        response = super().form_valid(form)
+        messages.success(self.request, "Account created successfully. Please log in.")
+        return response
 
 
 def get_trade_counts(request, days_ago, parameter):

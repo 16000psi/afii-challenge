@@ -46,7 +46,7 @@
         {% for trade in potential_trades %}
         <tr>
           <td><a href="{% url 'potential_trade_edit' pk=trade.trade_id %}">✏️</a>
-<a href="{% url 'potential_trade_delete' pk=trade.trade_id %}">❌</a>
+<a href="{% url 'potential_trade_delete' pk=trade.trade_id %}#trade-blotter">❌</a>
           </td>
             <td>{{ trade.trade_id }}</td>
             <td>{{ trade.trade_date|date:"Y/m/d" }}</td>
