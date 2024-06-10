@@ -1,46 +1,48 @@
 <div data-graph-display>
-<div id="graph" class="card">
-  <h2 class="card__title" id="chart-title">Trades by Instrument Type</h2>
-  <div class="card__underline" aria-hidden="true"></div>
-  <label for="days_ago">Trades from the last </label>
-  <select name="days_ago" id="days_ago_selector">
-    <option value="1">1 Day</option>
-    <option value="7">7 Days</option>
-    <option value="10" selected>10 Days</option>
-    <option value="28">28 Days</option>
-    <option value="100">100 Days</option>
-    <option value="365">1 Year</option>
-    <option value="730">2 Years</option>
-    <option value="1826">5 Years</option>
-  </select>
-  <canvas id="graph-container" class="graph"></canvas>
-  <select name="parameter" id="parameter_selector">
-    <option value="instrument_type">Instrument Type</option>
-    <option value="strategy">Strategy</option>
-  </select>
-</div>
-
-<div id="price-graph" class="card">
-  <h2 class="card__title" id="price-chart-title">Price Spread by Instrument Type</h2>
-  <div class="card__underline" aria-hidden="true"></div>
-  <label for="instrument_type">Instrument Type: </label>
-  <select
-    name="instrument_type"
-    id="instrument_type_selector"
-  >
-    <option value="bond" selected>Bond</option>
-    <option value="cds">CDS</option>
-    <option value="futures">Futures</option>
-    <option value="fx">FX</option>
-  </select>
-  <select name="metric" id="metric_selector">
-    <option value="price" selected>Price</option>
-    <option value="spread">Spread</option>
-    <option value="notional">Notional</option>
-  </select>
-
-  <canvas id="price-graph-container" class="graph"></canvas>
-</div>
-
+  <div id="graph" class="card">
+    <h2 class="card__title" id="chart-title">Trades by Instrument Type</h2>
+    <div class="card__underline" aria-hidden="true"></div>
+    <label for="days_ago">Trades from the last </label>
+    <select name="days_ago" id="days_ago_selector">
+      <option value="1">1 Day</option>
+      <option value="7">7 Days</option>
+      <option value="10" selected>10 Days</option>
+      <option value="28">28 Days</option>
+      <option value="100">100 Days</option>
+      <option value="365">1 Year</option>
+      <option value="730">2 Years</option>
+      <option value="1826">5 Years</option>
+    </select>
+    <canvas id="graph-container" class="graph"></canvas>
+    <div class="parameter-container">
+      <select name="parameter" id="parameter_selector">
+        <option value="instrument_type">Instrument Type</option>
+        <option value="strategy">Strategy</option>
+      </select>
+    </div>
   </div>
+
+  <div id="price-graph" class="card">
+    <h2 class="card__title" id="price-chart-title">
+      Price Spread by Instrument Type
+    </h2>
+    <div class="card__underline" aria-hidden="true"></div>
+    <label for="instrument_type">Instrument Type: </label>
+    <select name="instrument_type" id="instrument_type_selector">
+      <option value="bond" selected>Bond</option>
+      <option value="cds">CDS</option>
+      <option value="futures">Futures</option>
+      <option value="fx">FX</option>
+    </select>
+
+    <canvas id="price-graph-container" class="graph"></canvas>
+    <div class="parameter-container">
+      <select name="metric" id="metric_selector">
+        <option value="price" selected>Price</option>
+        <option value="spread">Spread</option>
+        <option value="notional">Notional</option>
+      </select>
+    </div>
+  </div>
+</div>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
